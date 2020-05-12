@@ -55,11 +55,7 @@ class AriaDownloadHelper(DownloadHelper):
         LOGGER.info(f"Download Error: {error}")
         if dl: dl.getListener().onDownloadError(error)
 
-<<<<<<< HEAD
     def start_listener(self):
-=======
-    def add_download(self, link: str, path):
->>>>>>> c4e81d5... start Aria2 Websocket listener before adding download in queue.
         aria2.listen_to_notifications(threaded=True, on_download_start=self.__onDownloadStarted,
                                       on_download_error=self.__onDownloadError,
                                       on_download_pause=self.__onDownloadPause,
@@ -72,7 +68,7 @@ class AriaDownloadHelper(DownloadHelper):
         with self._resource_lock:
             self.gid = download.gid
         with download_dict_lock:
-            download_dict[self._listener.uid] = AriaDownloadStatus(self.gid, self._listener)
+            download_dict[self.__listener.uid] = AriaDownloadStatus(self, self.__listener)
             LOGGER.info(f"Started: {self.gid} DIR:{download.dir} ")
 
     def add_download(self, link: str, path, listener):
