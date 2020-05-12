@@ -55,12 +55,25 @@ class AriaDownloadHelper(DownloadHelper):
         LOGGER.info(f"Download Error: {error}")
         if dl: dl.getListener().onDownloadError(error)
 
+<<<<<<< HEAD
     def start_listener(self):
+=======
+    def add_download(self, link: str, path):
+>>>>>>> c4e81d5... start Aria2 Websocket listener before adding download in queue.
         aria2.listen_to_notifications(threaded=True, on_download_start=self.__onDownloadStarted,
                                       on_download_error=self.__onDownloadError,
                                       on_download_pause=self.__onDownloadPause,
                                       on_download_stop=self.__onDownloadStopped,
                                       on_download_complete=self.__onDownloadComplete)
+        if is_magnet(link):
+            download = aria2.add_magnet(link, {'dir': path})
+        else:
+            download = aria2.add_uris([link], {'dir': path})
+        with self._resource_lock:
+            self.gid = download.gid
+        with download_dict_lock:
+            download_dict[self._listener.uid] = AriaDownloadStatus(self.gid, self._listener)
+            LOGGER.info(f"Started: {self.gid} DIR:{download.dir} ")
 
     def add_download(self, link: str, path, listener):
         if is_magnet(link):
