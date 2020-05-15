@@ -61,15 +61,20 @@ class AriaDownloadHelper(DownloadHelper):
                                       on_download_pause=self.__onDownloadPause,
                                       on_download_stop=self.__onDownloadStopped,
                                       on_download_complete=self.__onDownloadComplete)
+
+
+    def add_download(self, link: str, path,listener):
         if is_magnet(link):
             download = aria2.add_magnet(link, {'dir': path})
         else:
             download = aria2.add_uris([link], {'dir': path})
-        with self._resource_lock:
-            self.gid = download.gid
+        if download.error_message: #no need to proceed further at this point
+            listener.onDownloadError(download.error_message)
+            return 
         with download_dict_lock:
-            download_dict[self.__listener.uid] = AriaDownloadStatus(self, self.__listener)
-            LOGGER.info(f"Started: {self.gid} DIR:{download.dir} ")
+            download_dict[listener.uid] = AriaDownloadStatus(download.gid,listener)
+            LOGGER.info(f"Started: {download.gid} DIR:{download.dir} ")
+
 
     def add_download(self, link: str, path, listener):
         if is_magnet(link):
