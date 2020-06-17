@@ -5,7 +5,7 @@ import time
 from pyrogram import Client
 
 from bot import LOGGER, download_dict, download_dict_lock, TELEGRAM_API, \
-    TELEGRAM_HASH, USER_SESSION_STRING
+    TELEGRAM_HASH, BOT_TOKEN
 from .download_helper import DownloadHelper
 from ..status_utils.telegram_download_status import TelegramDownloadStatus
 
@@ -25,7 +25,8 @@ class TelegramDownloadHelper(DownloadHelper):
         self.__start_time = time.time()
         self.__user_bot = Client(api_id=TELEGRAM_API,
                                  api_hash=TELEGRAM_HASH,
-                                 session_name=USER_SESSION_STRING)
+                                 session_name="python-aria-mirror-bot",
+                                 bot_token=BOT_TOKEN)
         self.__user_bot.start()
         self.__is_cancelled = False
 
