@@ -42,14 +42,11 @@ sudo pacman -S docker python
 ```
 
 ## Setting up config file
-```
-cp config_sample.env config.env
-```
-- Remove the first line saying:
-```
-_____REMOVE_THIS_LINE_____=True
-```
-Fill up rest of the fields. Meaning of each fields are discussed below:
+
+Fill up the fields.
+Knowledge of @Python is required to know where / how to fill each values.
+
+Meaning of each fields are discussed below:
 - **BOT_TOKEN** : The telegram bot token that you get from @BotFather
 - **GDRIVE_FOLDER_ID** : This is the folder ID of the Google Drive Folder to which you want to upload all the mirrors.
 - **DOWNLOAD_DIR** : The path to the local folder where the downloads should be downloaded to

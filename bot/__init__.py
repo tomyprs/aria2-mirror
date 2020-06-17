@@ -19,23 +19,22 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
                     level=logging.INFO)
 
-load_dotenv('config.env')
+if bool(os.environ.get("VNE", False)):
+    load_dotenv('config_sample.env')
+else:
+    load_dotenv('config.env')
 
 Interval = []
 
 
 def getConfig(name: str):
-    return os.environ[name]
+    val = os.environ.get(name)
+    if val:
+        return val
+    return input(f"enter {name}'s value: ")
 
 
 LOGGER = logging.getLogger(__name__)
-
-try:
-    if bool(getConfig('_____REMOVE_THIS_LINE_____')):
-        logging.error('The README.md file there to be read! Exiting now!')
-        exit()
-except KeyError:
-    pass
 
 aria2 = aria2p.API(
     aria2p.Client(
