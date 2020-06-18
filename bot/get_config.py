@@ -18,6 +18,9 @@ import os
 
 def getConfig(name: str) -> str:
     val = os.environ.get(name)
-    if val:
-        return val
-    return input(f"enter {name}'s value: ")
+    if not val:
+        try:
+            val = input(f"enter {name}'s value: ")
+        except EOFError:
+            val = None
+    return val
