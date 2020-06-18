@@ -5,6 +5,7 @@ import time
 
 import aria2p
 import telegram.ext as tg
+from .get_config import getConfig
 from dotenv import load_dotenv
 import socket
 
@@ -24,16 +25,12 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+if os.path.exists("config.env"):
+    load_dotenv('config.env')
+else:
+    load_dotenv('config_sample.env')
 
 Interval = []
-
-
-def getConfig(name: str):
-    val = os.environ.get(name)
-    if val:
-        return val
-    return input(f"enter {name}'s value: ")
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -66,11 +63,14 @@ try:
     DOWNLOAD_DIR = getConfig('DOWNLOAD_DIR')
     if DOWNLOAD_DIR[-1] != '/' or DOWNLOAD_DIR[-1] != '\\':
         DOWNLOAD_DIR = DOWNLOAD_DIR + '/'
+    # -_-
+    DOWNLOAD_DIR = os.path.abspath(DOWNLOAD_DIR)
     DOWNLOAD_STATUS_UPDATE_INTERVAL = int(getConfig('DOWNLOAD_STATUS_UPDATE_INTERVAL'))
     OWNER_ID = int(getConfig('OWNER_ID'))
     AUTO_DELETE_MESSAGE_DURATION = int(getConfig('AUTO_DELETE_MESSAGE_DURATION'))
     TELEGRAM_API = getConfig('TELEGRAM_API')
     TELEGRAM_HASH = getConfig('TELEGRAM_HASH')
+    CRED_JSON = getConfig('CRED_JSON')
 except KeyError as e:
     LOGGER.error("One or more env variables missing! Exiting now")
     exit(1)
