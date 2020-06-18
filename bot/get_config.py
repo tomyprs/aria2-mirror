@@ -22,5 +22,5 @@ def getConfig(name: str) -> str:
         try:
             val = input(f"enter {name}'s value: ")
         except EOFError:
-            val = None
+            val = ""
     return val
