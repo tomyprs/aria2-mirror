@@ -1,3 +1,4 @@
+import os
 from telegram.ext import CommandHandler, run_async
 from telegram import Bot, Update
 from bot import Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER
@@ -24,7 +25,15 @@ def _watch(bot: Bot, update: Update, args: list, isTar=False):
 
     listener = MirrorListener(bot, update, isTar, tag)
     ydl = YoutubeDLHelper(listener)
-    threading.Thread(target=ydl.add_download,args=(link, f'{DOWNLOAD_DIR}{listener.uid}')).start()
+    threading.Thread(
+        target=ydl.add_download,args=(
+            link,
+            os.path.join(
+                DOWNLOAD_DIR,
+                str(listener.uid)
+            )
+        )
+    ).start()
     sendStatusMessage(update, bot)
     if len(Interval) == 0:
         Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))

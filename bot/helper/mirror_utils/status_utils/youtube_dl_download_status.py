@@ -1,3 +1,4 @@
+import os
 from bot import DOWNLOAD_DIR
 from bot.helper.ext_utils.bot_utils import MirrorStatus, get_readable_file_size, get_readable_time
 from .status import Status
@@ -13,7 +14,10 @@ class YoutubeDLDownloadStatus(Status):
         return self.obj.gid
 
     def path(self):
-        return f"{DOWNLOAD_DIR}{self.uid}"
+        return os.path.join(
+            DOWNLOAD_DIR,
+            str(self.uid)
+        )
 
     def processed_bytes(self):
         return self.obj.downloaded_bytes

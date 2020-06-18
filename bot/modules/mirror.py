@@ -53,7 +53,11 @@ class MirrorListener(listeners.MirrorListeners):
             download = download_dict[self.uid]
             name = download.name()
             size = download.size_raw()
-            m_path = f'{DOWNLOAD_DIR}{self.uid}/{download.name()}'
+            m_path = os.path.join(
+                DOWNLOAD_DIR,
+                str(self.uid),
+                download.name()
+            )
         if self.isTar:
             download.is_archiving = True
             try:
@@ -87,9 +91,17 @@ class MirrorListener(listeners.MirrorListeners):
                     LOGGER.error(str(e))
             else:
                 LOGGER.info("Not any valid archive, uploading file as it is.")
-                path = f'{DOWNLOAD_DIR}{self.uid}/{download_dict[self.uid].name()}'
+                path = os.path.join(
+                    DOWNLOAD_DIR,
+                    str(self.uid),
+                    download_dict[self.uid].name()
+                )
         else:
-            path = f'{DOWNLOAD_DIR}{self.uid}/{download_dict[self.uid].name()}'
+            path = os.path.join(
+                DOWNLOAD_DIR,
+                str(self.uid),
+                download_dict[self.uid].name()
+            )
         up_name = pathlib.PurePath(path).name
         LOGGER.info(f"Upload Name : {up_name}")
         drive = gdriveTools.GoogleDriveHelper(up_name, self)
@@ -195,7 +207,13 @@ def _mirror(bot, update, isTar=False, extract=False):
                 if file.mime_type != "application/x-bittorrent":
                     listener = MirrorListener(bot, update, isTar, tag)
                     tg_downloader = TelegramDownloadHelper(listener)
-                    tg_downloader.add_download(reply_to, f'{DOWNLOAD_DIR}{listener.uid}/')
+                    tg_downloader.add_download(
+                        reply_to,
+                        os.path.join(
+                            DOWNLOAD_DIR,
+                            str(listener.uid)
+                        ) + os.path.sep
+                    )
                     sendStatusMessage(update, bot)
                     if len(Interval) == 0:
                         Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))

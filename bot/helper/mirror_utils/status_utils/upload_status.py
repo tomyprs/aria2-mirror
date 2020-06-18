@@ -1,3 +1,4 @@
+import os
 from .status import Status
 from bot.helper.ext_utils.bot_utils import MirrorStatus, get_readable_file_size, get_readable_time
 from bot import DOWNLOAD_DIR
@@ -11,7 +12,10 @@ class UploadStatus(Status):
         self.message = listener.message
 
     def path(self):
-        return f"{DOWNLOAD_DIR}{self.uid}"
+        return os.path.join(
+            DOWNLOAD_DIR,
+            str(self.uid)
+        )
 
     def processed_bytes(self):
         return self.obj.uploaded_bytes

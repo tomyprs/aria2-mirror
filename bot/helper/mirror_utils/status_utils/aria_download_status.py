@@ -1,3 +1,4 @@
+import os
 from bot import aria2, DOWNLOAD_DIR, LOGGER
 from bot.helper.ext_utils.bot_utils import MirrorStatus
 from .status import Status
@@ -50,7 +51,10 @@ class AriaDownloadStatus(Status):
         return self.aria_download().name
 
     def path(self):
-        return f"{DOWNLOAD_DIR}{self.__uid}"
+        return os.path.join(
+            DOWNLOAD_DIR,
+            str(self.__uid)
+        )
 
     def size(self):
         return self.aria_download().total_length_string()

@@ -1,3 +1,5 @@
+import os
+
 from telegram.ext import CommandHandler, run_async
 
 from bot import download_dict, dispatcher, download_dict_lock, DOWNLOAD_DIR
@@ -48,7 +50,12 @@ def cancel_mirror(update, context):
     else:
         dl.download().cancel_download()
     sleep(1)  # Wait a Second For Aria2 To free Resources.
-    clean_download(f'{DOWNLOAD_DIR}{mirror_message.message_id}/')
+    clean_download(
+        os.path.join(
+            DOWNLOAD_DIR,
+            str(mirror_message.message_id)
+        ) + os.path.sep
+    )
 
 
 @run_async
