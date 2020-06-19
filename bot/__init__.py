@@ -114,9 +114,9 @@ except KeyError:
     USE_SERVICE_ACCOUNTS = False
 
 USE_WEBHOOKS = getConfig('USE_WEBHOOKS')
-if bool(USE_WEBHOOKS):
+if USE_WEBHOOKS.lower() != "":
     USE_WEBHOOKS = True
-    WEBHOOK_PORT = int(getConfig('WEBHOOK_PORT'))
+    WEBHOOK_PORT = int(getConfig('PORT'))
     WEBHOOK_HOST = getConfig('WEBHOOK_HOST')
     WEBHOOK_URL = getConfig('WEBHOOK_URL')
 else:
