@@ -6,7 +6,7 @@ from os import execl, path, remove
 from sys import executable
 
 from telegram.ext import CommandHandler, run_async
-from bot import dispatcher, updater, botStartTime
+from bot import dispatcher, updater, botStartTime, USE_WEBHOOKS
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import *
@@ -118,7 +118,22 @@ def main():
     dispatcher.add_handler(help_handler)
     dispatcher.add_handler(stats_handler)
     dispatcher.add_handler(log_handler)
-    updater.start_polling()
+    if USE_WEBHOOKS:
+        from bot import (
+            BOT_TOKEN,
+            WEBHOOK_PORT,
+            WEBHOOK_HOST,
+            WEBHOOK_URL
+        )
+        updater.start_webhook(
+            listen=WEBHOOK_HOST,
+            # (c) https://t.me/c/1186975633/22915
+            port=WEBHOOK_PORT,
+            url_path=BOT_TOKEN
+        )
+        updater.bot.set_webhook(url=WEBHOOK_URL + "/" + BOT_TOKEN)
+    else:
+        updater.start_polling()
     LOGGER.info("Bot Started!")
     signal.signal(signal.SIGINT, fs_utils.exit_clean_up)
 

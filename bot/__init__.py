@@ -25,6 +25,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+
 if os.path.exists("config.env"):
     load_dotenv('config.env')
 else:
@@ -111,6 +112,16 @@ try:
         USE_SERVICE_ACCOUNTS = False
 except KeyError:
     USE_SERVICE_ACCOUNTS = False
+
+USE_WEBHOOKS = getConfig('USE_WEBHOOKS')
+if bool(USE_WEBHOOKS):
+    USE_WEBHOOKS = True
+    WEBHOOK_PORT = int(getConfig('WEBHOOK_PORT'))
+    WEBHOOK_HOST = getConfig('WEBHOOK_HOST')
+    WEBHOOK_URL = getConfig('WEBHOOK_URL')
+else:
+    USE_WEBHOOKS = False
+
 
 updater = tg.Updater(token=BOT_TOKEN,use_context=True)
 bot = updater.bot
