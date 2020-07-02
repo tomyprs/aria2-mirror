@@ -25,7 +25,7 @@ class TelegramDownloadHelper(DownloadHelper):
         self.__start_time = time.time()
         self.__user_bot = Client(api_id=TELEGRAM_API,
                                  api_hash=TELEGRAM_HASH,
-                                 session_name="python-aria-mirror-bot",
+                                 session_name=":memory:",
                                  bot_token=BOT_TOKEN)
         self.__user_bot.start()
         self.__is_cancelled = False
