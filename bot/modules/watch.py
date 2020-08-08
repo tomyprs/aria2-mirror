@@ -4,7 +4,7 @@ from pyrogram import (
     Filters,
     Message
 )
-from bot import AUTHORIZED_CHATS, Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, dispatcher, LOGGER
+from bot import AUTHORIZED_CHATS, Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, LOGGER
 from bot.helper.ext_utils.bot_utils import setInterval
 from bot.helper.telegram_helper.message_utils import update_all_messages, sendMessage, sendStatusMessage
 from .mirror import MirrorListener
