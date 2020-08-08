@@ -27,5 +27,5 @@ def mirror_status(client: Client, update: Message):
         if index in status_reply_dict.keys():
             deleteMessage(status_reply_dict[index])
             del status_reply_dict[index]
-    sendStatusMessage(message, client)
+    sendStatusMessage(update, client)
     deleteMessage(update)
