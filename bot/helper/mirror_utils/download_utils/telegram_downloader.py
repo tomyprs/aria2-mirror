@@ -1,4 +1,3 @@
-import logging
 import threading
 import time
 
@@ -11,8 +10,6 @@ from ..status_utils.telegram_download_status import TelegramDownloadStatus
 
 global_lock = threading.Lock()
 GLOBAL_GID = set()
-
-logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 
 class TelegramDownloadHelper(DownloadHelper):
