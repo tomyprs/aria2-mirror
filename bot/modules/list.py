@@ -15,8 +15,7 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
     Filters.chat(AUTHORIZED_CHATS)
 )
 def list_drive(client: Client, message: Message):
-    message = message.text
-    search = message.split(' ', maxsplit=1)[1]
+    search = message.text.split(' ', maxsplit=1)[1]
     LOGGER.info(f"Searching: {search}")
     gdrive = GoogleDriveHelper(None)
     msg = gdrive.drive_list(search)
