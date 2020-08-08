@@ -24,7 +24,7 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
 def execution_cmd_t(client, message):
     PROCESS_RUNNING = "..."
     # send a message, use it to update the progress when required
-    status_message = await message.reply_text(PROCESS_RUNNING, quote=True)
+    status_message = message.reply_text(PROCESS_RUNNING, quote=True)
     # get the message from the triggered command
     cmd = message.text.split(" ", maxsplit=1)[1]
 
