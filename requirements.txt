@@ -5,10 +5,9 @@ google-auth-httplib2>=0.0.3,<0.1.0
 google-auth-oauthlib>=0.4.1,<0.10.0
 httplib2==0.18.0
 oauth2client
-Pyrogram>=0.16.0,<0.16.10
+Pyrogram>=0.18.0,<0.18.10
 python-dotenv>=0.10
 python-magic
-python-telegram-bot==12.6.1 
 requests
 tenacity>=6.0.0
 TgCrypto>=1.1.1,<1.1.10
