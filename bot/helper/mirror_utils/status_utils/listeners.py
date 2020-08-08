@@ -2,7 +2,7 @@ class MirrorListeners:
     def __init__(self, context, update):
         self.bot = context
         self.update = update
-        self.message = message
+        self.message = update
         self.uid = self.message.message_id
 
     def onDownloadStarted(self):
