@@ -3,7 +3,6 @@ import pickle
 from os import path, remove
 from pyrogram import Client
 from bot import (
-    botStartTime,
     BOT_TOKEN,
     DOWNLOAD_DIR,
     LOGGER,
@@ -21,7 +20,7 @@ def main():
             restart_message = pickle.load(status)
         restart_message.edit_text("Restarted Successfully!")
         remove('restart.pickle')
-    
+
     plugins = dict(
         root="bot/modules"
     )

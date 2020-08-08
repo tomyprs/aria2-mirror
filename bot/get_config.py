@@ -14,13 +14,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+from sys import exit
 
 
-def getConfig(name: str) -> str:
-    val = os.environ.get(name)
-    if not val:
+def getConfig(name: str, d_v=None, should_prompt=False):
+    val = os.environ.get(name, d_v)
+    if not val and should_prompt:
         try:
             val = input(f"enter {name}'s value: ")
         except EOFError:
-            val = ""
+            val = d_v
+        if not val and should_prompt:
+            print(
+                "One or more env variables missing! Exiting now"
+            )
+            exit(1)
+        print("\n")
     return val

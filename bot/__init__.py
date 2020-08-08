@@ -4,7 +4,6 @@ import threading
 import time
 
 import aria2p
-import telegram.ext as tg
 from .get_config import getConfig
 from dotenv import load_dotenv
 import socket
@@ -54,75 +53,37 @@ status_reply_dict = {}
 # Key: update.message.message_id
 # Value: An object of Status
 download_dict = {}
+
+
+BOT_TOKEN = getConfig('BOT_TOKEN', should_prompt=True)
+parent_id = getConfig('GDRIVE_FOLDER_ID')
+DOWNLOAD_DIR = getConfig('DOWNLOAD_DIR')
+DOWNLOAD_DIR = os.path.abspath(DOWNLOAD_DIR)
+if DOWNLOAD_DIR[-1] != '/' or DOWNLOAD_DIR[-1] != '\\':
+    DOWNLOAD_DIR = DOWNLOAD_DIR + os.path.sep
+DOWNLOAD_STATUS_UPDATE_INTERVAL = int(getConfig(
+    'DOWNLOAD_STATUS_UPDATE_INTERVAL'
+))
+OWNER_ID = int(getConfig('OWNER_ID', should_prompt=True))
+AUTO_DELETE_MESSAGE_DURATION = int(getConfig('AUTO_DELETE_MESSAGE_DURATION'))
+TELEGRAM_API = getConfig('TELEGRAM_API', should_prompt=True)
+TELEGRAM_HASH = getConfig('TELEGRAM_HASH', should_prompt=True)
+CRED_JSON = getConfig('CRED_JSON')
+
 # Stores list of users and chats the bot is authorized to use in
 AUTHORIZED_CHATS = set(
-    int(x) for x in getConfig("AUTHORIZED_CHATS").split()
+    int(x) for x in getConfig("AUTHORIZED_CHATS", should_prompt=True).split()
 )
-try:
-    BOT_TOKEN = getConfig('BOT_TOKEN')
-    parent_id = getConfig('GDRIVE_FOLDER_ID')
-    DOWNLOAD_DIR = getConfig('DOWNLOAD_DIR')
-    DOWNLOAD_DIR = os.path.abspath(DOWNLOAD_DIR)
-    if DOWNLOAD_DIR[-1] != '/' or DOWNLOAD_DIR[-1] != '\\':
-        DOWNLOAD_DIR = DOWNLOAD_DIR + os.path.sep
-    DOWNLOAD_STATUS_UPDATE_INTERVAL = int(getConfig('DOWNLOAD_STATUS_UPDATE_INTERVAL'))
-    OWNER_ID = int(getConfig('OWNER_ID'))
-    AUTO_DELETE_MESSAGE_DURATION = int(getConfig('AUTO_DELETE_MESSAGE_DURATION'))
-    TELEGRAM_API = getConfig('TELEGRAM_API')
-    TELEGRAM_HASH = getConfig('TELEGRAM_HASH')
-    CRED_JSON = getConfig('CRED_JSON')
-except KeyError as e:
-    LOGGER.error("One or more env variables missing! Exiting now")
-    exit(1)
+AUTHORIZED_CHATS = list(AUTHORIZED_CHATS)
+AUTHORIZED_CHATS.append(OWNER_ID)
+AUTHORIZED_CHATS = list(set(AUTHORIZED_CHATS))
 
-try:
-    MEGA_API_KEY = getConfig('MEGA_API_KEY')
-except KeyError:
-    logging.warning('MEGA API KEY not provided!')
+MEGA_API_KEY = getConfig('MEGA_API_KEY', None)
 
-try:
-    MEGA_EMAIL_ID = getConfig('MEGA_EMAIL_ID')
-    MEGA_PASSWORD = getConfig('MEGA_PASSWORD')
-    if len(MEGA_EMAIL_ID) == 0 or len(MEGA_PASSWORD) == 0:
-        raise KeyError
-except KeyError:
-    logging.warning('MEGA Credentials not provided!')
-    MEGA_EMAIL_ID = None
-    MEGA_PASSWORD = None
-try:
-    INDEX_URL = getConfig('INDEX_URL')
-    if len(INDEX_URL) == 0:
-        INDEX_URL = None
-except KeyError:
-    INDEX_URL = None
-try:
-    IS_TEAM_DRIVE = getConfig('IS_TEAM_DRIVE')
-    if IS_TEAM_DRIVE.lower() == 'true':
-        IS_TEAM_DRIVE = True
-    else:
-        IS_TEAM_DRIVE = False
-except KeyError:
-    IS_TEAM_DRIVE = False
+MEGA_EMAIL_ID = getConfig('MEGA_EMAIL_ID', None)
+MEGA_PASSWORD = getConfig('MEGA_PASSWORD', None)
 
-try:
-    USE_SERVICE_ACCOUNTS = getConfig('USE_SERVICE_ACCOUNTS')
-    if USE_SERVICE_ACCOUNTS.lower() == 'true':
-        USE_SERVICE_ACCOUNTS = True
-    else:
-        USE_SERVICE_ACCOUNTS = False
-except KeyError:
-    USE_SERVICE_ACCOUNTS = False
+USE_SERVICE_ACCOUNTS = bool(getConfig('USE_SERVICE_ACCOUNTS', None))
 
-USE_WEBHOOKS = getConfig('USE_WEBHOOKS')
-if USE_WEBHOOKS.lower() != "":
-    USE_WEBHOOKS = True
-    WEBHOOK_PORT = int(getConfig('PORT'))
-    WEBHOOK_HOST = getConfig('WEBHOOK_HOST')
-    WEBHOOK_URL = getConfig('WEBHOOK_URL')
-else:
-    USE_WEBHOOKS = False
-
-
-updater = tg.Updater(token=BOT_TOKEN,use_context=True)
-bot = updater.bot
-dispatcher = updater.dispatcher
+INDEX_URL = getConfig('INDEX_URL', None)
+IS_TEAM_DRIVE = bool(getConfig('IS_TEAM_DRIVE', None))
