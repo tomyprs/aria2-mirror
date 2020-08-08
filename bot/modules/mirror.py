@@ -118,7 +118,7 @@ class MirrorListener(listeners.MirrorListeners):
     def onDownloadError(self, error):
         error = error.replace('<', ' ')
         error = error.replace('>', ' ')
-        LOGGER.info(self.update.effective_chat.id)
+        LOGGER.info(self.update.chat.id)
         with download_dict_lock:
             try:
                 download = download_dict[self.uid]
