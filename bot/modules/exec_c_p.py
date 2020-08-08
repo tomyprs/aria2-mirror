@@ -42,7 +42,7 @@ def execution_cmd_t(client, message):
         o_ = "No Output"
     r_c = process.returncode
     
-    final_output = "<b>command</b>: <code>{cmd}</code>\n\n<b>stderr</b>: \n<code>{e_}</code>\n\n<b>stdout</b>: \n<code>{o_}</code>\n\n<b>return</b>: <code>{r_c}</code>"
+    final_output = f"<b>command</b>: <code>{cmd}</code>\n\n<b>stderr</b>: \n<code>{e_}</code>\n\n<b>stdout</b>: \n<code>{o_}</code>\n\n<b>return</b>: <code>{r_c}</code>"
 
     if len(final_output) > 4095:
         with open("eval.text", "w+", encoding="utf8") as out_file:
