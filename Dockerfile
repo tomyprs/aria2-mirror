@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN apt-get -qq update
 RUN apt-get -qq install -y aria2 git python3 python3-pip \
-    rar unzip p7zip-full \
+    rar-free unzip p7zip-full \
     locales python3-lxml \
     curl pv jq ffmpeg
 
