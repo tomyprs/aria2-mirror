@@ -5,6 +5,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://github.com/SpEcHiDe/TerminalBot/blob/Pyrogram/COPYING>.
 
+import os
 import subprocess
 from pyrogram import (
     Client,
@@ -18,9 +19,9 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
 
 @Client.on_message(
     Filters.command(BotCommands.ExecCommand) &
-    Filters.chat(AUTH_USERS)
+    Filters.chat(AUTHORIZED_CHATS)
 )
-async def execution_cmd_t(client, message):
+def execution_cmd_t(client, message):
     PROCESS_RUNNING = "..."
     # send a message, use it to update the progress when required
     status_message = await message.reply_text(PROCESS_RUNNING, quote=True)

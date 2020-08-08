@@ -25,7 +25,7 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
     Filters.command(BotCommands.EvalCommand) &
     Filters.chat(AUTHORIZED_CHATS)
 )
-async def evaluation_cmd_t(client, message):
+def evaluation_cmd_t(client, message):
     PROCESS_RUNNING = "..."
     status_message = message.reply_text(PROCESS_RUNNING, quote=True)
 
@@ -75,7 +75,7 @@ async def evaluation_cmd_t(client, message):
         status_message.edit(final_output)
 
 
-async def aexec(code, client, message):
+def aexec(code, client, message):
     exec(
         f'def __aexec(client, message): ' +
         ''.join(f'\n {l}' for l in code.split('\n'))
