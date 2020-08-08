@@ -66,6 +66,14 @@ class _BotCommands:
             "COMMANDI_STATUS",
             "status"
         )
+        self.EvalCommand = getConfig(
+            "COMMANDI_EVAL",
+            "eval"
+        )
+        self.ExecCommand = getConfig(
+            "COMMANDI_EXEC",
+            "exec"
+        )
 
 
 BotCommands = _BotCommands()

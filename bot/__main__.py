@@ -33,6 +33,8 @@ def main():
         workdir=DOWNLOAD_DIR
     )
 
+    app.set_parse_mode("html")
+
     LOGGER.info("Bot Started!")
     signal.signal(signal.SIGINT, fs_utils.exit_clean_up)
 
