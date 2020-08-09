@@ -407,7 +407,8 @@ class GoogleDriveHelper:
         credentials = None
         if not USE_SERVICE_ACCOUNTS:
             credentials = OAuth2Credentials.from_json(CRED_JSON)
-            credentials.refresh(Request())
+            credentials.refresh(httplib2.Http())
+            http = credentials.authorize(httplib2.Http())
         else:
             LOGGER.info(
                 f"Authorizing with {SERVICE_ACCOUNT_INDEX}.json service account"
@@ -419,7 +420,7 @@ class GoogleDriveHelper:
         return build(
             'drive',
             'v3',
-            credentials=credentials,
+            http=http,
             cache_discovery=False
         )
 
