@@ -406,15 +406,22 @@ class GoogleDriveHelper:
         # Get credentials
         credentials = None
         if not USE_SERVICE_ACCOUNTS:
-            crds = OAuth2Credentials.from_json(CRED_JSON)
-            crds.refresh(httplib2.Http())
-            http = crds.authorize(httplib2.Http())
+            credentials = OAuth2Credentials.from_json(CRED_JSON)
+            credentials.refresh(Request())
         else:
-            LOGGER.info(f"Authorizing with {SERVICE_ACCOUNT_INDEX}.json service account")
+            LOGGER.info(
+                f"Authorizing with {SERVICE_ACCOUNT_INDEX}.json service account"
+            )
             credentials = service_account.Credentials.from_service_account_file(
                 f'accounts/{SERVICE_ACCOUNT_INDEX}.json',
-                scopes=self.__OAUTH_SCOPE)
-        return build('drive', 'v3', http=http, cache_discovery=False)
+                scopes=self.__OAUTH_SCOPE
+            )
+        return build(
+            'drive',
+            'v3',
+            credentials=credentials,
+            cache_discovery=False
+        )
 
     def drive_list(self, fileName):
         msg = ""
