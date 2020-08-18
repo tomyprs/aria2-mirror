@@ -26,10 +26,10 @@ def execution_cmd_t(client, message):
     # send a message, use it to update the progress when required
     status_message = message.reply_text(PROCESS_RUNNING, quote=True)
     # get the message from the triggered command
-    cmd = (message.text.split(" ", maxsplit=1)[1]).split(" ")
+    cmd = message.text.split(" ", maxsplit=1)[1]
 
     process = subprocess.run(
-        cmd,
+        cmd.split(" "),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
