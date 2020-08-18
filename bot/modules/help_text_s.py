@@ -1,5 +1,5 @@
 import pickle
-import shutil
+import shutil, psutil
 import time
 from os import execl
 from sys import executable
@@ -33,10 +33,14 @@ def stats(client: Client, message: Message):
     total = get_readable_file_size(total)
     used = get_readable_file_size(used)
     free = get_readable_file_size(free)
+    cpuUsage = psutil.cpu_percent(interval=0.5)
+    memory = psutil.virtual_memory().percent
     stats = f'Bot Uptime: {currentTime}\n' \
             f'Total disk space: {total}\n' \
             f'Used: {used}\n' \
-            f'Free: {free}'
+            f'Free: {free}\n' \
+            f'CPU: {cpuUsage}%\n' \
+            f'RAM: {memory}%'
     sendMessage(stats, client, message)
 
 
