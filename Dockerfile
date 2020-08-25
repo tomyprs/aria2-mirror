@@ -13,7 +13,8 @@ RUN apt-get -qq update && \
         curl pv jq \
         ffmpeg locales \
         python3-lxml && \
-    apt-get purge -y software-properties-common
+    apt-get purge -y software-properties-common && \
+    apt-get autoremove
 
 COPY requirements.txt .
 
