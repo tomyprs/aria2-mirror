@@ -1,8 +1,8 @@
 from pyrogram import (
     Client,
-    Filters,
-    Message
+    filters
 )
+from pyrogram.types import Message
 from bot import (
     AUTHORIZED_CHATS
 )
@@ -14,8 +14,8 @@ from bot.helper.ext_utils.bot_utils import new_thread
 
 @new_thread
 @Client.on_message(
-    Filters.command(BotCommands.CloneCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.CloneCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def cloneNode(client: Client, message: Message):
     args = message.text.split(" ", maxsplit=1)

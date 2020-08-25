@@ -1,9 +1,14 @@
 from pyrogram import (
     Client,
-    Filters,
-    Message
+    filters
 )
-from bot import AUTHORIZED_CHATS, status_reply_dict, DOWNLOAD_STATUS_UPDATE_INTERVAL, status_reply_dict_lock
+from pyrogram.types import Message
+from bot import (
+    AUTHORIZED_CHATS,
+    status_reply_dict,
+    DOWNLOAD_STATUS_UPDATE_INTERVAL,
+    status_reply_dict_lock
+)
 from bot.helper.telegram_helper.message_utils import *
 from time import sleep
 from bot.helper.ext_utils.bot_utils import get_readable_message
@@ -12,8 +17,8 @@ import threading
 
 
 @Client.on_message(
-    Filters.command(BotCommands.StatusCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.StatusCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def mirror_status(client: Client, update: Message):
     message = get_readable_message()

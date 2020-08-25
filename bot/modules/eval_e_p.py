@@ -12,8 +12,9 @@ import traceback
 
 from pyrogram import (
     Client,
-    Filters
+    filters
 )
+from pyrogram.types import Message
 
 from bot import (
     AUTHORIZED_CHATS
@@ -22,10 +23,10 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
 
 
 @Client.on_message(
-    Filters.command(BotCommands.EvalCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.EvalCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
-def evaluation_cmd_t(client, message):
+def evaluation_cmd_t(client, message: Message):
     PROCESS_RUNNING = "..."
     status_message = message.reply_text(PROCESS_RUNNING, quote=True)
 

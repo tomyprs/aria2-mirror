@@ -1,9 +1,9 @@
 import requests
 from pyrogram import (
     Client,
-    Filters,
-    Message
+    filters
 )
+from pyrogram.types import Message
 from bot import Interval, INDEX_URL
 from bot import AUTHORIZED_CHATS, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock
 from bot.helper.ext_utils import fs_utils, bot_utils
@@ -248,24 +248,24 @@ def _mirror(bot: Client, message: Message, isTar=False, extract=False):
 
 
 @Client.on_message(
-    Filters.command(BotCommands.MirrorCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.MirrorCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def mirror(client: Client, message: Message):
     _mirror(client, message)
 
 
 @Client.on_message(
-    Filters.command(BotCommands.TarMirrorCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.TarMirrorCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def tar_mirror(client: Client, message: Message):
     _mirror(client, message, isTar=True)
 
 
 @Client.on_message(
-    Filters.command(BotCommands.UnzipMirrorCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.UnzipMirrorCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def unzip_mirror(client: Client, message: Message):
     _mirror(client, message, extract=True)

@@ -2,9 +2,9 @@ import os
 
 from pyrogram import (
     Client,
-    Filters,
-    Message
+    filters
 )
+from pyrogram.types import Message
 from bot import (
     AUTHORIZED_CHATS,
     OWNER_ID,
@@ -21,8 +21,8 @@ from bot.helper.ext_utils.bot_utils import getDownloadByGid, MirrorStatus
 
 
 @Client.on_message(
-    Filters.command(BotCommands.CancelMirror) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.CancelMirror) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def cancel_mirror(client: Client, message: Message):
     args = message.text.split(" ", maxsplit=1)
@@ -74,8 +74,8 @@ def cancel_mirror(client: Client, message: Message):
 
 
 @Client.on_message(
-    Filters.command(BotCommands.CancelAllCommand) &
-    Filters.user(OWNER_ID)
+    filters.command(BotCommands.CancelAllCommand) &
+    filters.user(OWNER_ID)
 )
 def cancel_all(client: Client, message: Message):
     with download_dict_lock:

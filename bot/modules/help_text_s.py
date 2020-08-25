@@ -3,12 +3,11 @@ import shutil, psutil
 import time
 from os import execl
 from sys import executable
-
 from pyrogram import (
     Client,
-    Filters,
-    Message
+    filters
 )
+from pyrogram.types import Message
 from bot import (
     botStartTime,
     AUTHORIZED_CHATS,
@@ -24,8 +23,8 @@ from bot.helper.ext_utils.bot_utils import (
 
 
 @Client.on_message(
-    Filters.command(BotCommands.StatsCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.StatsCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def stats(client: Client, message: Message):
     currentTime = get_readable_time((time.time() - botStartTime))
@@ -45,8 +44,8 @@ def stats(client: Client, message: Message):
 
 
 @Client.on_message(
-    Filters.command(BotCommands.StartCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.StartCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def start(client: Client, message: Message):
     start_string = f'''
@@ -57,8 +56,8 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
 
 
 @Client.on_message(
-    Filters.command(BotCommands.RestartCommand) &
-    Filters.user(OWNER_ID)
+    filters.command(BotCommands.RestartCommand) &
+    filters.user(OWNER_ID)
 )
 def restart(client: Client, message: Message):
     restart_message = sendMessage(
@@ -74,8 +73,8 @@ def restart(client: Client, message: Message):
 
 
 @Client.on_message(
-    Filters.command(BotCommands.PingCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.PingCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def ping(client: Client, message: Message):
     start_time = int(round(time.time() * 1000))
@@ -85,16 +84,16 @@ def ping(client: Client, message: Message):
 
 
 @Client.on_message(
-    Filters.command(BotCommands.LogCommand) &
-    Filters.user(OWNER_ID)
+    filters.command(BotCommands.LogCommand) &
+    filters.user(OWNER_ID)
 )
 def log(client: Client, message: Message):
     sendLogFile(client, message)
 
 
 @Client.on_message(
-    Filters.command(BotCommands.HelpCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.HelpCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def bot_help(client: Client, message: Message):
     help_string = f'''

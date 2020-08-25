@@ -1,4 +1,5 @@
-from pyrogram import Client, Message
+from pyrogram import Client
+from pyrogram.types import Message
 import time
 from bot import AUTO_DELETE_MESSAGE_DURATION, LOGGER, \
     status_reply_dict, status_reply_dict_lock

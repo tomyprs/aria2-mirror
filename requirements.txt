@@ -6,10 +6,10 @@ google-auth-oauthlib>=0.4.1,<0.10.0
 httplib2==0.15.0
 oauth2client
 psutil
-Pyrogram>=0.18.0,<0.18.10
+pyrogram
 python-dotenv>=0.10
 python-magic
 requests
 tenacity>=6.0.0
 TgCrypto>=1.1.1,<1.1.10
-git+git://github.com/lzzy12/youtube-dl@d7c2b43#youtube_dl
+git+git://github.com/sudoshell/youtube-dl@master#youtube_dl

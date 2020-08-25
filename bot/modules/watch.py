@@ -1,9 +1,9 @@
 import os
 from pyrogram import (
     Client,
-    Filters,
-    Message
+    filters
 )
+from pyrogram.types import Message
 from bot import AUTHORIZED_CHATS, Interval, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, LOGGER
 from bot.helper.ext_utils.bot_utils import setInterval
 from bot.helper.telegram_helper.message_utils import update_all_messages, sendMessage, sendStatusMessage
@@ -42,8 +42,8 @@ def _watch(bot: Client, update: Message, args: list, isTar=False):
 
 
 @Client.on_message(
-    Filters.command(BotCommands.WatchCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.WatchCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def watch(client: Client, message: Message):
     args = [" ".join(message.command[1:])]
@@ -51,8 +51,8 @@ def watch(client: Client, message: Message):
 
 
 @Client.on_message(
-    Filters.command(BotCommands.TarWatchCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.TarWatchCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def watchTar(client: Client, message: Message):
     args = [" ".join(message.command[1:])]

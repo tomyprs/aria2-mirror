@@ -1,8 +1,8 @@
 from pyrogram import (
     Client,
-    Filters,
-    Message
+    filters
 )
+from pyrogram.types import Message
 from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot import LOGGER, AUTHORIZED_CHATS
 from bot.helper.telegram_helper.message_utils import auto_delete_message, sendMessage
@@ -11,8 +11,8 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
 
 
 @Client.on_message(
-    Filters.command(BotCommands.ListCommand) &
-    Filters.chat(AUTHORIZED_CHATS)
+    filters.command(BotCommands.ListCommand) &
+    filters.chat(AUTHORIZED_CHATS)
 )
 def list_drive(client: Client, message: Message):
     search = message.text.split(' ', maxsplit=1)[1]
