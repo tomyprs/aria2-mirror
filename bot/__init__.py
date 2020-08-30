@@ -7,7 +7,9 @@ import aria2p
 from .get_config import getConfig
 from dotenv import load_dotenv
 import socket
+import faulthandler
 
+faulthandler.enable()
 socket.setdefaulttimeout(600)
 
 botStartTime = time.time()
