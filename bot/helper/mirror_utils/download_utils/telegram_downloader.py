@@ -96,7 +96,7 @@ class TelegramDownloadHelper(DownloadHelper):
             if download:
                 self.__onDownloadStart(media.file_name, media.file_size, media.file_id)
                 LOGGER.info(f'Downloading telegram file with id: {media.file_id}')
-                threading.Thread(target=self.__download, args=(_message, path)).start()
+                threading.Thread(target=self.__download, args=(message, path)).start()
             else:
                 self.__onDownloadError('File already being downloaded!')
         else:
