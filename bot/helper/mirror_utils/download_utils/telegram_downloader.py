@@ -43,9 +43,10 @@ class TelegramDownloadHelper(DownloadHelper):
             self.__gid = file_id
         self.__listener.onDownloadStarted()
 
-    def __onDownloadProgress(self, current, total):
+    async def __onDownloadProgress(self, current, total, message):
         if self.__is_cancelled:
             self.__onDownloadError('Cancelled by user!')
+            message._client.stop_transmission()
             return
         with self.__resource_lock:
             self.downloaded_bytes = current
@@ -70,6 +71,7 @@ class TelegramDownloadHelper(DownloadHelper):
     def __download(self, message, path):
         download = message.download(
             progress=self.__onDownloadProgress,
+            progress_args=(message),
             file_name=path
         )
         if download is not None:
