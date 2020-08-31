@@ -178,7 +178,7 @@ class GoogleDriveHelper:
             self.__set_permission(response['id'])
         # Define file instance and get url for download
         drive_file = self.__service.files().get(supportsTeamDrives=True, fileId=response['id']).execute()
-        download_url = self.__G_DRIVE_BASE_DOWNLOAD_URL.format(drive_file.get('id'))
+        download_url = drive_file.get('id')
         return download_url
 
     def upload(self, file_name: str):
@@ -199,8 +199,8 @@ class GoogleDriveHelper:
         if os.path.isfile(file_path):
             try:
                 mime_type = get_mime_type(file_path)
-                link = self.upload_file(file_path, file_name, mime_type, parent_id)
-                if link is None:
+                dir_id = self.upload_file(file_path, file_name, mime_type, parent_id)
+                if dir_id is None:
                     raise Exception('Upload has been manually cancelled')
                 LOGGER.info("Uploaded To G-Drive: " + file_path)
             except Exception as e:
@@ -235,7 +235,7 @@ class GoogleDriveHelper:
         LOGGER.info(download_dict)
         self.__listener.onUploadComplete(dir_id)
         LOGGER.info("Deleting downloaded file/folder..")
-        return link
+        return dir_id
 
     @retry(wait=wait_exponential(multiplier=2, min=3, max=6), stop=stop_after_attempt(5),
            retry=retry_if_exception_type(HttpError), before=before_log(LOGGER, logging.DEBUG))
