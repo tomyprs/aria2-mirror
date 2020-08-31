@@ -221,7 +221,6 @@ class GoogleDriveHelper:
                 if result is None:
                     raise Exception('Upload has been manually cancelled!')
                 LOGGER.info("Uploaded To G-Drive: " + file_name)
-                link = f"https://drive.google.com/folderview?id={dir_id}"
             except Exception as e:
                 if isinstance(e, RetryError):
                     LOGGER.info(f"Total Attempts: {e.last_attempt.attempt_number}")
@@ -234,7 +233,7 @@ class GoogleDriveHelper:
             finally:
                 self.updater.cancel()
         LOGGER.info(download_dict)
-        self.__listener.onUploadComplete(link)
+        self.__listener.onUploadComplete(dir_id)
         LOGGER.info("Deleting downloaded file/folder..")
         return link
 
