@@ -227,10 +227,10 @@ def _mirror(bot: Client, message: Message, isTar=False, extract=False):
                         Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
                     return
                 else:
-                    link = file.get_file().file_path
+                    link = reply_to.download()
     else:
         tag = None
-    if not bot_utils.is_url(link) and not bot_utils.is_magnet(link):
+    if not bot_utils.is_url(link) and not bot_utils.is_magnet(link) and not bot_utils.is_torrent(link):
         sendMessage('No download source provided', bot, message)
         return
 

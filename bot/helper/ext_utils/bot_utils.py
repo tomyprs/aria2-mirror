@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import threading
 import time
@@ -137,6 +138,12 @@ def is_url(url: str):
 def is_magnet(url: str):
     magnet = re.findall(MAGNET_REGEX, url)
     if magnet:
+        return True
+    return False
+
+
+def is_torrent(file_name: str):
+    if os.path.exists(file_name) and file_name.lower().endswith(".torrent"):
         return True
     return False
 
