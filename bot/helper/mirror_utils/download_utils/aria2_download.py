@@ -66,8 +66,10 @@ class AriaDownloadHelper(DownloadHelper):
 
 
     def add_download(self, link: str, path, listener):
-        if is_magnet(link) or is_torrent(link):
+        if is_magnet(link):
             download = aria2.add_magnet(link, {'dir': path})
+        elif is_torrent(link):
+            download = aria2.add_torrent(link, {'dir': path})
         else:
             download = aria2.add_uris([link], {'dir': path})
 
