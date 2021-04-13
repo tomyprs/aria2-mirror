@@ -425,6 +425,12 @@ class GoogleDriveHelper:
                     'mimeType') == "application/vnd.google-apps.folder":  # Detect Whether Current Entity is a Folder or File.
                 msg += f"⁍ <a href='https://drive.google.com/open?id={file.get('id')}'>{file.get('name')}" \
                        f"</a> (folder)"
+
+            elif file.get('mimeType') == 'application/vnd.google-apps.shortcut':
+                    msg += f"⁍ <a href='https://drive.google.com/drive/folders/{file.get('id')}'>{file.get('name')}" \
+                        f"</a> (shortcut)"
+                    # Excluded index link as indexes cant download or open these shortcuts
+
             else:
                 msg += f"⁍ <a href='https://drive.google.com/uc?id={file.get('id')}" \
                        f"&export=download'>{file.get('name')}</a> ({get_readable_file_size(int(file.get('size')))})"
