@@ -35,7 +35,6 @@ from bot import (
     BUTTON_SIX_URL,
     SHORTENER,
     SHORTENER_API,
-    IMAGE_URL,
 )
 from bot.helper.ext_utils.bot_utils import *
 from bot.helper.ext_utils.fs_utils import get_mime_type, get_path_size
@@ -631,7 +630,7 @@ class GoogleDriveHelper:
         )
         content_count = 0
         if response["files"]:
-            msg += f'<img src="{IMAGE_URL}" /><h4>{len(response["files"])} Results: {fileName}</h4><br><br>'
+            msg += f'<h4>{len(response["files"])} Results: {fileName}</h4><br>'
             for file in response.get("files", []):
                 if (
                     file.get("mimeType") == "application/vnd.google-apps.folder"
