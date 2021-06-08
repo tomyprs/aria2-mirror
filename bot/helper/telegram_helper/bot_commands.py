@@ -1,79 +1,30 @@
-from bot.get_config import getConfig
-
 class _BotCommands:
     def __init__(self):
-        self.StatsCommand = getConfig(
-            "COMMANDI_STATS",
-            "stats"
-        )
-        self.StartCommand = getConfig(
-            "COMMANDI_START",
-            "start"
-        )
-        self.RestartCommand = getConfig(
-            "COMMANDI_RESTART",
-            "restart"
-        )
-        self.PingCommand = getConfig(
-            "COMMANDI_PING",
-            "ping"
-        )
-        self.LogCommand = getConfig(
-            "COMMANDI_LOG",
-            "log"
-        )
-        self.HelpCommand = getConfig(
-            "COMMANDI_HELP",
-            "help"
-        )
-        self.MirrorCommand = getConfig(
-            "COMMANDI_MIRROR",
-            "mirror"
-        )
-        self.TarMirrorCommand = getConfig(
-            "COMMANDI_TARMIRROR",
-            "tarmirror"
-        )
-        self.WatchCommand = getConfig(
-            "COMMANDI_WATCH",
-            "watch"
-        )
-        self.TarWatchCommand = getConfig(
-            "COMMANDI_TARWATCH",
-            "tarwatch"
-        )
-        self.CloneCommand = getConfig(
-            "COMMANDI_CLONE",
-            "clone"
-        )
-        self.UnzipMirrorCommand = getConfig(
-            "COMMANDI_UNZIPMIRROR",
-            "unzipmirror"
-        )
-        self.CancelMirror = getConfig(
-            "COMMANDI_CANCEL",
-            "cancel"
-        )
-        self.CancelAllCommand = getConfig(
-            "COMMANDI_CANCELALL",
-            "cancelall"
-        )
-        self.ListCommand = getConfig(
-            "COMMANDI_LIST",
-            "list"
-        )
-        self.StatusCommand = getConfig(
-            "COMMANDI_STATUS",
-            "status"
-        )
-        self.EvalCommand = getConfig(
-            "COMMANDI_EVAL",
-            "eval"
-        )
-        self.ExecCommand = getConfig(
-            "COMMANDI_EXEC",
-            "exec"
-        )
+        self.StartCommand = "start"
+        self.MirrorCommand = "mirror"
+        self.UnzipMirrorCommand = "unzipmirror"
+        self.TarMirrorCommand = "tarmirror"
+        self.CancelMirror = "cancel"
+        self.CancelAllCommand = "cancelall"
+        self.ListCommand = "list"
+        self.StatusCommand = "status"
+        self.AuthorizedUsersCommand = "users"
+        self.AuthorizeCommand = "authorize"
+        self.UnAuthorizeCommand = "unauthorize"
+        self.AddSudoCommand = "addsudo"
+        self.RmSudoCommand = "rmsudo"
+        self.PingCommand = "ping"
+        self.RestartCommand = "restart"
+        self.StatsCommand = "stats"
+        self.HelpCommand = "help"
+        self.LogCommand = "log"
+        self.SpeedCommand = "speedtest"
+        self.CloneCommand = "clone"
+        self.CountCommand = "count"
+        self.WatchCommand = "watch"
+        self.TarWatchCommand = "tarwatch"
+        self.DeleteCommand = "del"
+        self.UsageCommand = "usage"
 
 
 BotCommands = _BotCommands()
