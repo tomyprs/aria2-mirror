@@ -32,7 +32,7 @@ RUN git clone https://github.com/meganz/sdk.git sdk && cd sdk \
 # Install Python dependencies
 ADD requirements.txt .
 RUN pip3 install -U pip wheel setuptools && \
-    pip3 install -r --no-cache-dir requirements.txt
+    pip3 install -r requirements.txt
 
 # Set working directory
 WORKDIR /app
