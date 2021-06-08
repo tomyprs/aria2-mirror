@@ -5,7 +5,8 @@ env:
   IMAGE_NAME: worker
   HEROKU_API_KEY: '${{ secrets.HEROKU_API_KEY }}'
   HEROKU_APP: '${{ secrets.HEROKU_APP }}'
-  GIT_TOKEN: '${{secrets.GIT_TOKEN}}'
+  GIT_TOKEN: '${{ secrets.GIT_TOKEN }}'
+  CREDS_REPO: '${{ secrets.CREDS_REPO }}'
 
 jobs:
   build_and_push:
