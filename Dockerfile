@@ -17,7 +17,7 @@ RUN apt-get -qq update \
 	    libcrypto++-dev libsqlite3-dev libc-ares-dev \
 	    libsodium-dev libnautilus-extension-dev \
 	    libssl-dev libfreeimage-dev swig jq ffmpeg git curl \
-        p7zip-full p7zip-rar pv locales python3-lxml \
+        p7zip-full p7zip-rar unzip pv locales python3-lxml \
 	    && apt-get -y autoremove
 
 # Installing mega sdk python binding
