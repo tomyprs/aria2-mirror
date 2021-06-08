@@ -389,11 +389,11 @@ class GoogleDriveHelper:
 
     def authorize(self):
         # Get credentials
+        http = credentials.authorize(httplib2.Http())
         credentials = None
         if not USE_SERVICE_ACCOUNTS:
             credentials = OAuth2Credentials.from_json(CRED_JSON)
             credentials.refresh(httplib2.Http())
-            http = credentials.authorize(httplib2.Http())
         else:
             LOGGER.info(
                 f"Authorizing with {SERVICE_ACCOUNT_INDEX}.json service account"
