@@ -28,12 +28,6 @@ def namespace_of(chat, update, bot):
     return namespaces[chat]
 
 
-def log_input(update):
-    user = update.effective_user.id
-    chat = update.effective_chat.id
-    LOGGER.info(f"IN: {update.effective_message.text} (user={user}, chat={chat})")
-
-
 def send(msg, bot, update):
     if len(str(msg)) > 2000:
         with io.BytesIO(str.encode(msg)) as out_file:
@@ -52,10 +46,9 @@ def dev_plus(func):
         bot = context.bot
         user = update.effective_user
 
-        if user.id == OWNER_ID:
-            return func(update, context, *args, **kwargs)
-        elif not user:
-            pass
+        if user.id != OWNER_ID:
+            return
+        return func(update, context, *args, **kwargs)
 
     return is_dev_plus_func
 
@@ -81,7 +74,6 @@ def cleanup_code(code):
 
 
 def do(func, bot, update):
-    log_input(update)
     content = update.message.text.split(" ", 1)[-1]
     body = cleanup_code(content)
     env = namespace_of(update.message.chat_id, update, bot)
