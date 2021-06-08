@@ -18,7 +18,7 @@ RUN apt-get -qq update \
 	    libsodium-dev libnautilus-extension-dev \
 	    libssl-dev libfreeimage-dev swig jq ffmpeg git curl \
         p7zip-full p7zip-rar pv locales python3-lxml \
-	    && apt-get -y autoremove && apt-get purge -y software-properties-common
+	    && apt-get -y autoremove
 
 # Installing mega sdk python binding
 ENV MEGA_SDK_VERSION '3.8.1'
