@@ -4,6 +4,12 @@ FROM python:3-slim-buster
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install & update pkg
+RUN apt-get -qq update && \
+    apt-get install -y software-properties-common && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-add-repository non-free && \
+    apt-get -qq update
+
 RUN apt-get -qq update \
 	    && apt-get -qq install -y --no-install-recommends \
 	    git g++ gcc autoconf automake aria2 \
@@ -12,7 +18,7 @@ RUN apt-get -qq update \
 	    libsodium-dev libnautilus-extension-dev \
 	    libssl-dev libfreeimage-dev swig jq ffmpeg git curl \
         p7zip-full p7zip-rar pv locales python3-lxml \
-	    && apt-get -y autoremove
+	    && apt-get -y autoremove && apt-get purge -y software-properties-common
 
 # Installing mega sdk python binding
 ENV MEGA_SDK_VERSION '3.8.1'
