@@ -1,6 +1,6 @@
 name: Docker Base Image Builds
 
-on:
+#on:
   push:
     # Publish `master` as Docker `latest` image.
     branches:
