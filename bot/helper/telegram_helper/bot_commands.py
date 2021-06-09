@@ -1,29 +1,22 @@
 class _BotCommands:
     def __init__(self):
-        self.StartCommand = "megastart"
-        self.MirrorCommand = "megagd"
-        self.UnzipMirrorCommand = "megaunpack"
-        self.TarMirrorCommand = "megatarmirror"
-        self.CancelMirror = "megacancel"
-        self.CancelAllCommand = "megacancelall"
-        self.ListCommand = "megalist"
-        self.deleteCommand = "megadel"
-        self.StatusCommand = "megastatus"
-        self.AuthorizedUsersCommand = "megausers"
-        self.AuthorizeCommand = "auth"
-        self.UnAuthorizeCommand = "unauth"
-        self.AddSudoCommand = "addsudo"
-        self.RmSudoCommand = "rmsudo"
-        self.PingCommand = "megaping"
-        self.RestartCommand = "megarestart"
-        self.StatsCommand = "megastats"
-        self.HelpCommand = "megahelp"
-        self.LogCommand = "log"
-        self.CloneCommand = "megacl"
-        self.WatchCommand = "megawatch"
-        self.TarWatchCommand = "megatarwatch"
-        self.UsageCommand = "megausage"
-        self.TorrentSearchCommand = "megats"
-
+        self.StartCommand = 'start'
+        self.MirrorCommand = 'mirror'
+        self.UnzipMirrorCommand = 'unzipmirror'
+        self.TarMirrorCommand = 'tarmirror'
+        self.CancelMirror = 'cancel'
+        self.CancelAllCommand = 'cancelall'
+        self.ListCommand = 'list'
+        self.StatusCommand = 'status'
+        self.AuthorizeCommand = 'authorize'
+        self.UnAuthorizeCommand = 'unauthorize'
+        self.PingCommand = 'ping'
+        self.RestartCommand = 'restart'
+        self.StatsCommand = 'stats'
+        self.HelpCommand = 'help'
+        self.LogCommand = 'log'
+        self.CloneCommand = "clone"
+        self.WatchCommand = 'watch'
+        self.TarWatchCommand = 'tarwatch'
 
 BotCommands = _BotCommands()
