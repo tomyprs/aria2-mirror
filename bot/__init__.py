@@ -129,27 +129,31 @@ finally:
     conn.close()
 
 try:
-    MEGA_KEY = getConfig("MEGA_KEY")
+    MEGA_KEY = getConfig('MEGA_KEY')
+
 except KeyError:
     MEGA_KEY = None
-    LOGGER.info("MEGA API KEY NOT AVAILABLE")
+    LOGGER.info('MEGA API KEY NOT AVAILABLE')
 if MEGA_KEY is not None:
+    # Start megasdkrest binary
+    subprocess.Popen(["megasdkrest", "--apikey", MEGA_KEY])
+    time.sleep(3)  # Wait for the mega server to start listening
+    mega_client = MegaSdkRestClient('http://localhost:6090')
     try:
-        MEGA_USERNAME = getConfig("MEGA_USERNAME")
-        MEGA_PASSWORD = getConfig("MEGA_PASSWORD")
-        # Start megasdkrest binary
-        subprocess.Popen(["megasdkrest", "--apikey", MEGA_KEY])
-        time.sleep(3)
-        mega_client = MegaSdkRestClient("http://localhost:6090")
-        try:
-            mega_client.login(MEGA_USERNAME, MEGA_PASSWORD)
-        except mega_err.MegaSdkRestClientException as e:
-            logging.error(e.message["message"])
-            exit(0)
+        MEGA_USERNAME = getConfig('MEGA_USERNAME')
+        MEGA_PASSWORD = getConfig('MEGA_PASSWORD')
+        if len(MEGA_USERNAME) > 0 and len(MEGA_PASSWORD) > 0:
+            try:
+                mega_client.login(MEGA_USERNAME, MEGA_PASSWORD)
+            except mega_err.MegaSdkRestClientException as e:
+                logging.error(e.message['message'])
+                exit(0)
+        else:
+            LOGGER.info("Mega API KEY provided but credentials not provided. Starting mega in anonymous mode!")
+            MEGA_USERNAME = None
+            MEGA_PASSWORD = None
     except KeyError:
-        LOGGER.info(
-            "Mega API KEY provided but credentials not provided. Starting mega in anonymous mode!"
-        )
+        LOGGER.info("Mega API KEY provided but credentials not provided. Starting mega in anonymous mode!")
         MEGA_USERNAME = None
         MEGA_PASSWORD = None
 else:
