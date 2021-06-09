@@ -1,5 +1,5 @@
 import requests
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 
 from bot import Interval, INDEX_URL, LOGGER, MEGA_KEY
 from bot import dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock
@@ -226,27 +226,24 @@ def _mirror(bot, update, isTar=False, extract=False):
         Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
 
 
-@run_async
 def mirror(update, context):
     _mirror(context.bot, update)
 
 
-@run_async
 def tar_mirror(update, context):
     _mirror(context.bot, update, True)
 
 
-@run_async
 def unzip_mirror(update, context):
     _mirror(context.bot, update, extract=True)
 
 
 mirror_handler = CommandHandler(BotCommands.MirrorCommand, mirror,
-                                filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+                                filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_asyn,=True)
 tar_mirror_handler = CommandHandler(BotCommands.TarMirrorCommand, tar_mirror,
-                                    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+                                    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
 unzip_mirror_handler = CommandHandler(BotCommands.UnzipMirrorCommand, unzip_mirror,
-                                      filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+                                      filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
 dispatcher.add_handler(mirror_handler)
 dispatcher.add_handler(tar_mirror_handler)
 dispatcher.add_handler(unzip_mirror_handler)
