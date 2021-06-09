@@ -1,5 +1,5 @@
 name: Heroku Deploy
-on: workflow_dispatch
+on: push
 
 env:
   IMAGE_NAME: worker
