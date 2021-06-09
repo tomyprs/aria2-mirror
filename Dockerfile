@@ -4,9 +4,6 @@ FROM ghcr.io/tomyprs/aria2-mirror:master
 ADD requirements.txt .
 RUN pip3 install -U pip wheel setuptools && \
     pip3 install -r requirements.txt
-RUN curl -L https://github.com/jaskaranSM/megasdkrest/releases/download/v0.1/megasdkrest \
-    -o /usr/bin/megasdkrest && \
-    chmod +x /usr/bin/megasdkrest
 
 # Set working directory
 WORKDIR /app
