@@ -27,9 +27,6 @@ RUN apt-get -qq update \
 #    && make -j$(nproc --all) \
 #    && cd bindings/python/ && python3 setup.py bdist_wheel \
 #    && cd dist/ && pip3 install --no-cache-dir megasdk-$MEGA_SDK_VERSION-*.whl
-RUN curl -L https://github.com/jaskaranSM/megasdkrest/releases/download/v0.1/megasdkrest \
-    -o /usr/local/bin/megasdkrest && \
-    chmod +x /usr/local/bin/megasdkrest
 
 # Set command 
 CMD ["bash"]
