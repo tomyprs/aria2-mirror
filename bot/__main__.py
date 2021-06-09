@@ -1,101 +1,59 @@
 import shutil, psutil
 import signal
-import os
+import pickle
 
-from pyrogram import idle
-from bot import app
+from os import execl, path, remove
 from sys import executable
-from datetime import datetime
-import pytz
 import time
 
-from telegram import ParseMode, BotCommand
 from telegram.ext import CommandHandler, run_async
-from bot import bot, dispatcher, updater, botStartTime
+from bot import dispatcher, updater, botStartTime
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import *
 from .helper.ext_utils.bot_utils import get_readable_file_size, get_readable_time
 from .helper.telegram_helper.filters import CustomFilters
-from bot.helper.telegram_helper import button_build
-from .modules import (
-    authorize,
-    list,
-    cancel_mirror,
-    mirror_status,
-    mirror,
-    clone,
-    watch,
-    shell,
-    eval,
-    anime,
-    stickers,
-    search,
-    delete,
-    speedtest,
-    usage,
-    mediainfo,
-    count,
-)
-
-now = datetime.now(pytz.timezone("Asia/Jakarta"))
+from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clone, watch, delete, usage, torrent_search
 
 
 @run_async
 def stats(update, context):
-    currentTime = get_readable_time(time.time() - botStartTime)
-    current = now.strftime("%Y/%m/%d %I:%M:%S %p")
-    total, used, free = shutil.disk_usage(".")
+    currentTime = get_readable_time((time.time() - botStartTime))
+    total, used, free = shutil.disk_usage('.')
     total = get_readable_file_size(total)
     used = get_readable_file_size(used)
     free = get_readable_file_size(free)
-    sent = get_readable_file_size(psutil.net_io_counters().bytes_sent)
-    recv = get_readable_file_size(psutil.net_io_counters().bytes_recv)
     cpuUsage = psutil.cpu_percent(interval=0.5)
     memory = psutil.virtual_memory().percent
-    disk = psutil.disk_usage("/").percent
-    stats = (
-        f"<b>Bot Uptime:</b> {currentTime}\n"
-        f"<b>Start Time:</b> {current}\n"
-        f"<b>Total Disk Space:</b> {total}\n"
-        f"<b>Used:</b> {used}  "
-        f"<b>Free:</b> {free}\n\n"
-        f"📊Data Usage📊\n<b>Upload:</b> {sent}\n"
-        f"<b>Download:</b> {recv}\n\n"
-        f"<b>CPU:</b> {cpuUsage}%\n"
-        f"<b>RAM:</b> {memory}%\n"
-        f"<b>DISK:</b> {disk}%"
-    )
-    update.effective_message.reply_text(stats, parse_mode=ParseMode.HTML)
+    stats = f'Bot Uptime: {currentTime}\n' \
+            f'Total disk space: {total}\n' \
+            f'Used: {used}\n' \
+            f'Free: {free}\n' \
+            f'CPU: {cpuUsage}%\n' \
+            f'RAM: {memory}%'
+    sendMessage(stats, context.bot, update)
 
 
 @run_async
 def start(update, context):
-    start_string = f"""
-This bot can mirror all your links to Google Drive!
-Type /{BotCommands.HelpCommand} to get a list of available commands
-"""
+    LOGGER.info('UID: {} - UN: {} - MSG: {}'.format(update.message.chat.id,update.message.chat.username,update.message.text))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
-        if update.message.chat.type == "private":
-            sendMessage(f"Hey I'm Alive 🙂", context.bot, update)
-        else:
-            update.effective_message.reply_text(
-                start_string, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup
-            )
-    else:
-        sendMessage(f"Oops! not a Authorized user.", context.bot, update)
+        if update.message.chat.type == "private" :
+            sendMessage("This is a bot which can mirror all your links to Google drive!\nType /help to see all the commands", context.bot, update)
+        else :
+            sendMessage(f"Hey <b>{update.effective_user.first_name}</b>. This is a bot which can mirror all your links to Google drive!\nType /help to see all the commands", context.bot, update)
+    else :
+        sendMessage(f"Hey, <b>{update.message.chat.first_name}.</b> You're not authorized to use this bot.", context.bot, update)
 
 
 @run_async
 def restart(update, context):
     restart_message = sendMessage("Restarting, Please wait!", context.bot, update)
-    LOGGER.info(f"Restarting the Bot...")
     # Save restart message object in order to reply to it after restarting
-    with open(".restartmsg", "w") as f:
-        f.truncate(0)
-        f.write(f"{restart_message.chat.id}\n{restart_message.message_id}\n")
     fs_utils.clean_all()
-    os.execl(executable, executable, "-m", "bot")
+    with open('restart.pickle', 'wb') as status:
+        pickle.dump(restart_message, status)
+    execl(executable, executable, "-m", "bot")
 
 
 @run_async
@@ -103,7 +61,7 @@ def ping(update, context):
     start_time = int(round(time.time() * 1000))
     reply = sendMessage("Starting Ping", context.bot, update)
     end_time = int(round(time.time() * 1000))
-    editMessage(f"{end_time - start_time} ms", reply)
+    editMessage(f'{end_time - start_time} ms', reply)
 
 
 @run_async
@@ -113,157 +71,106 @@ def log(update, context):
 
 @run_async
 def bot_help(update, context):
-    help_string_adm = f"""
-/{BotCommands.HelpCommand}: To get this message
+    help_string_adm = f'''
+/{BotCommands.MirrorCommand} [URL or Magnet]: Upload file to GDrive.
 
-/{BotCommands.MirrorCommand} [download_url][magnet_link]: Start mirroring the link to Google Drive.
+/{BotCommands.UnzipMirrorCommand} [URL or Magnet]: Unzip and Upload to GDrive.
 
-/{BotCommands.UnzipMirrorCommand} [download_url][magnet_link]: Starts mirroring and if downloaded file is any archive, extracts it to Google Drive
+/{BotCommands.TarMirrorCommand} [URL or Magnet]: Upload file as .tar.
 
-/{BotCommands.TarMirrorCommand} [download_url][magnet_link]: Start mirroring and upload the archived (.tar) version of the download
+/{BotCommands.WatchCommand} [YTDL Supported Link]: Upload video to GDdrive.
 
-/{BotCommands.CloneCommand}: Copy file/folder to Google Drive
+/{BotCommands.TarWatchCommand} [YTDL Supported Link]: Upload video as .tar.
 
-/{BotCommands.CountCommand}: Count file/folder of Google Drive Links
+/{BotCommands.CloneCommand} [GD Public Link]: Clone file/folder from GD.
 
-/{BotCommands.DeleteCommand} [link]: Delete file from Google Drive (Only Owner & Sudo)
+/{BotCommands.CancelMirror} [GID or Reply to Command]: Use it to cancel download.
 
-/{BotCommands.WatchCommand} [youtube-dl supported link]: Mirror through youtube-dl. Click /{BotCommands.WatchCommand} for more help.
+/{BotCommands.StatusCommand} : Shows the downloads status.
 
-/{BotCommands.TarWatchCommand} [youtube-dl supported link]: Mirror through youtube-dl and tar before uploading
+/{BotCommands.StatsCommand} : Show server stats.
 
-/{BotCommands.CancelMirror}: Reply to the message by which the download was initiated and that download will be cancelled
+/{BotCommands.ListCommand} [Query]: Searches file/folder in GD.
 
-/{BotCommands.StatusCommand}: Shows a status of all the downloads
+/{BotCommands.TorrentSearchCommand} [Query] : For searching torrent.
 
-/{BotCommands.ListCommand} [search term]: Searches the search term in the Google Drive, if found replies with the link
+/{BotCommands.CancelAllCommand} : Cancel all downloads (Owner and Sudo only).
 
-/{BotCommands.StatsCommand}: Show Stats of the machine the bot is hosted on
+/{BotCommands.deleteCommand} [GD Link]: Delete file/folder from GD (Owner and Sudo only).
 
-/{BotCommands.AuthorizeCommand}: Authorize a chat or a user to use the bot (Can only be invoked by Owner & Sudo of the bot)
+/{BotCommands.UsageCommand} : To see Heroku Dyno Stats (Owner and Sudo only).
 
-/{BotCommands.UnAuthorizeCommand}: Unauthorize a chat or a user to use the bot (Can only be invoked by Owner & Sudo of the bot)
+/{BotCommands.RestartCommand} : Restart Bot (Owner and Sudo only).
 
-/{BotCommands.AuthorizedUsersCommand}: Show authorized users (Only Owner & Sudo)
+/{BotCommands.AuthorizeCommand} : Authorize user/group (Owner and Sudo only).
 
-/{BotCommands.AddSudoCommand}: Add sudo user (Only Owner)
+/{BotCommands.UnAuthorizeCommand} : Unauthorize user/group  (Owner and Sudo only).
 
-/{BotCommands.RmSudoCommand}: Remove sudo users (Only Owner)
+/{BotCommands.AuthorizedUsersCommand} : See authorized users/groups (Owner and Sudo only).
 
-/{BotCommands.LogCommand}: Get a log file of the bot. Handy for getting crash reports
+/{BotCommands.AddSudoCommand} : Add Sudo user (Owner only).
 
-/{BotCommands.UsageCommand}: To see Heroku Dyno Stats (Owner & Sudo only).
+/{BotCommands.RmSudoCommand} : Remove Sudo user (Owner only).
 
-/{BotCommands.SpeedCommand}: Check Internet Speed of the Host
+/{BotCommands.LogCommand} : Get log file (Owner and Sudo only).
 
-/shell: Run commands in Shell (Terminal).
+'''
 
-/mediainfo: Get detailed info about replied media (Only for Telegram file).
+    help_string = f'''
+/{BotCommands.MirrorCommand} [URL or Magnet]: Upload file to GDrive.
 
-/tshelp: Get help for Torrent search module.
+/{BotCommands.UnzipMirrorCommand} [URL or Magnet]: Unzip and Upload to GDrive.
 
-/weebhelp: Get help for Anime, Manga, and Character module.
+/{BotCommands.TarMirrorCommand} [URL or Magnet]: Upload file as .tar.
 
-/stickerhelp: Get help for Stickers module.
-"""
+/{BotCommands.WatchCommand} [YTDL Supported Link]: Upload video to GDdrive.
 
-    help_string = f"""
-/{BotCommands.HelpCommand}: To get this message
+/{BotCommands.TarWatchCommand} [YTDL Supported Link]: Upload video as .tar.
 
-/{BotCommands.MirrorCommand} [download_url][magnet_link]: Start mirroring the link to Google Drive.
+/{BotCommands.CloneCommand} [GD Public Link]: Clone file/folder from GD.
 
-/{BotCommands.UnzipMirrorCommand} [download_url][magnet_link]: Starts mirroring and if downloaded file is any archive, extracts it to Google Drive
+/{BotCommands.CancelMirror} [GID or Reply to Command]: Use it to cancel download.
 
-/{BotCommands.TarMirrorCommand} [download_url][magnet_link]: Start mirroring and upload the archived (.tar) version of the download
+/{BotCommands.StatusCommand} : Shows the downloads status.
 
-/{BotCommands.CloneCommand}: Copy file/folder to Google Drive
+/{BotCommands.StatsCommand} : Show server stats.
 
-/{BotCommands.CountCommand}: Count file/folder of Google Drive Links
+/{BotCommands.ListCommand} [Query]: Searches file/folder in GD.
 
-/{BotCommands.WatchCommand} [youtube-dl supported link]: Mirror through youtube-dl. Click /{BotCommands.WatchCommand} for more help.
+/{BotCommands.TorrentSearchCommand} [Query] : For searching torrent.
 
-/{BotCommands.TarWatchCommand} [youtube-dl supported link]: Mirror through youtube-dl and tar before uploading
-
-/{BotCommands.CancelMirror}: Reply to the message by which the download was initiated and that download will be cancelled
-
-/{BotCommands.StatusCommand}: Shows a status of all the downloads
-
-/{BotCommands.ListCommand} [search term]: Searches the search term in the Google Drive, if found replies with the link
-
-/{BotCommands.StatsCommand}: Show Stats of the machine the bot is hosted on
-
-/{BotCommands.SpeedCommand}: Check Internet Speed of the Host
-
-/mediainfo: Get detailed info about replied media (Only for Telegram file).
-
-/tshelp: Get help for Torrent search module.
-
-/weebhelp: Get help for Anime, Manga, and Character module.
-
-/stickerhelp: Get help for Stickers module.
-"""
+'''
 
     if CustomFilters.sudo_user(update) or CustomFilters.owner_filter(update):
-        sendMessage(help_string_adm, context.bot, update)
+        if update.message.chat.type == "private":
+            sendMessage(help_string_adm, context.bot, update)
+        else:
+            sendMessage("Please contact me in PM and send <code>/help</code>", context.bot, update)
     else:
-        sendMessage(help_string, context.bot, update)
-
-
-botcmds = [
-    BotCommand(f"{BotCommands.MirrorCommand}", "Start Mirroring"),
-    BotCommand(f"{BotCommands.TarMirrorCommand}", "Upload tar (zipped) file"),
-    BotCommand(f"{BotCommands.UnzipMirrorCommand}", "Extract files"),
-    BotCommand(f"{BotCommands.CloneCommand}", "Copy file/folder to Drive"),
-    BotCommand(f"{BotCommands.CountCommand}", "Count file/folder of Drive link"),
-    BotCommand(f"{BotCommands.WatchCommand}", "Mirror YT-DL support link"),
-    BotCommand(f"{BotCommands.TarWatchCommand}", "Mirror Youtube playlist link as tar"),
-    BotCommand(f"{BotCommands.CancelMirror}", "Cancel a task"),
-    BotCommand(f"{BotCommands.CancelAllCommand}", "Cancel all tasks"),
-    BotCommand(f"{BotCommands.DeleteCommand}", "Delete file from Drive"),
-    BotCommand(f"{BotCommands.ListCommand}", " [query] Searches files in Drive"),
-    BotCommand(f"{BotCommands.StatusCommand}", "Get Mirror Status message"),
-    BotCommand(f"{BotCommands.StatsCommand}", "Bot Usage Stats"),
-    BotCommand(f"{BotCommands.HelpCommand}", "Get Detailed Help"),
-    BotCommand(f"{BotCommands.SpeedCommand}", "Check Speed of the host"),
-    BotCommand(f"{BotCommands.LogCommand}", "Bot Log [owner/sudo only]"),
-    BotCommand(f"{BotCommands.RestartCommand}", "Restart bot [owner/sudo only]"),
-]
+        if update.message.chat.type == "private":
+            sendMessage(help_string, context.bot, update)
+        else:
+            sendMessage("Please contact me in PM and send <code>/help</code>", context.bot, update)
 
 
 def main():
     fs_utils.start_cleanup()
     # Check if the bot is restarting
-    if os.path.isfile(".restartmsg"):
-        with open(".restartmsg") as f:
-            chat_id, msg_id = map(int, f)
-        bot.edit_message_text("Restarted successfully!", chat_id, msg_id)
-        os.remove(".restartmsg")
-    bot.set_my_commands(botcmds)
+    if path.exists('restart.pickle'):
+        with open('restart.pickle', 'rb') as status:
+            restart_message = pickle.load(status)
+        restart_message.edit_text("Restarted Successfully!")
+        remove('restart.pickle')
 
     start_handler = CommandHandler(BotCommands.StartCommand, start)
-    ping_handler = CommandHandler(
-        BotCommands.PingCommand,
-        ping,
-        filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
-    )
-    restart_handler = CommandHandler(
-        BotCommands.RestartCommand,
-        restart,
-        filters=CustomFilters.owner_filter | CustomFilters.sudo_user,
-    )
-    help_handler = CommandHandler(
-        BotCommands.HelpCommand,
-        bot_help,
-        filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
-    )
-    stats_handler = CommandHandler(
-        BotCommands.StatsCommand,
-        stats,
-        filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
-    )
-    log_handler = CommandHandler(
-        BotCommands.LogCommand, log, filters=CustomFilters.owner_filter | CustomFilters.sudo_user
-    )
+    ping_handler = CommandHandler(BotCommands.PingCommand, ping,
+                                  filters=CustomFilters.owner_filter | CustomFilters.sudo_user)
+    restart_handler = CommandHandler(BotCommands.RestartCommand, restart,
+                                     filters=CustomFilters.owner_filter | CustomFilters.sudo_user)
+    help_handler = CommandHandler(BotCommands.HelpCommand, bot_help)
+    stats_handler = CommandHandler(BotCommands.StatsCommand,
+                                   stats, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+    log_handler = CommandHandler(BotCommands.LogCommand, log, filters=CustomFilters.owner_filter | CustomFilters.sudo_user)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(ping_handler)
     dispatcher.add_handler(restart_handler)
@@ -271,10 +178,8 @@ def main():
     dispatcher.add_handler(stats_handler)
     dispatcher.add_handler(log_handler)
     updater.start_polling()
-    LOGGER.info("Bot Started!")
+    LOGGER.info("Bot Started")
     signal.signal(signal.SIGINT, fs_utils.exit_clean_up)
 
 
-app.start()
 main()
-idle()
