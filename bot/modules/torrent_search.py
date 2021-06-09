@@ -38,7 +38,7 @@ def tor_search(update, context):
 
         if reply_ == "":
             editMessage(f"No torrents found for {query}", msg)
-            
+
     except BaseException:
         editMessage("Torrent Search API is down\nTry again later", msg)
 

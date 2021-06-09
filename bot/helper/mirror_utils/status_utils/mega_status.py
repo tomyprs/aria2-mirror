@@ -3,7 +3,7 @@ from bot.helper.ext_utils.bot_utils import MirrorStatus, get_readable_file_size,
 from .status import Status
 
 
-class TelegramDownloadStatus(Status):
+class MegaDownloadStatus(Status):
     def __init__(self, obj, listener):
         self.obj = obj
         self.uid = listener.uid

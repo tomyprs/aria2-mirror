@@ -1,28 +1,29 @@
 class _BotCommands:
     def __init__(self):
-        self.StartCommand = 'start'
-        self.MirrorCommand = 'gd'
-        self.UnzipMirrorCommand = 'unpack'
-        self.TarMirrorCommand = 'tarmirror'
-        self.CancelMirror = 'cancel'
-        self.CancelAllCommand = 'cancelall'
-        self.ListCommand = 'list'
-        self.deleteCommand = 'del'
-        self.StatusCommand = 'status'
-        self.AuthorizedUsersCommand = 'users'
-        self.AuthorizeCommand = 'auth'
-        self.UnAuthorizeCommand = 'unauth'
-        self.AddSudoCommand = 'addsudo'
-        self.RmSudoCommand = 'rmsudo'
-        self.PingCommand = 'ping'
-        self.RestartCommand = 'restart'
-        self.StatsCommand = 'stats'
-        self.HelpCommand = 'help'
-        self.LogCommand = 'log'
-        self.CloneCommand = "cl"
-        self.WatchCommand = 'watch'
-        self.TarWatchCommand = 'tarwatch'
-        self.UsageCommand = 'usage'
-        self.TorrentSearchCommand = 'ts'
+        self.StartCommand = "megastart"
+        self.MirrorCommand = "megagd"
+        self.UnzipMirrorCommand = "megaunpack"
+        self.TarMirrorCommand = "megatarmirror"
+        self.CancelMirror = "megacancel"
+        self.CancelAllCommand = "megacancelall"
+        self.ListCommand = "megalist"
+        self.deleteCommand = "megadel"
+        self.StatusCommand = "megastatus"
+        self.AuthorizedUsersCommand = "megausers"
+        self.AuthorizeCommand = "auth"
+        self.UnAuthorizeCommand = "unauth"
+        self.AddSudoCommand = "addsudo"
+        self.RmSudoCommand = "rmsudo"
+        self.PingCommand = "megaping"
+        self.RestartCommand = "megarestart"
+        self.StatsCommand = "megastats"
+        self.HelpCommand = "megahelp"
+        self.LogCommand = "log"
+        self.CloneCommand = "megacl"
+        self.WatchCommand = "megawatch"
+        self.TarWatchCommand = "megatarwatch"
+        self.UsageCommand = "megausage"
+        self.TorrentSearchCommand = "megats"
+
 
 BotCommands = _BotCommands()

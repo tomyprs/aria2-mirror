@@ -1,11 +1,20 @@
 import requests
 from telegram.ext import CommandHandler, run_async
 
-from bot import Interval, INDEX_URL,LOGGER
-from bot import dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock
+from bot import Interval, INDEX_URL, LOGGER, MEGA_KEY
+from bot import (
+    dispatcher,
+    DOWNLOAD_DIR,
+    DOWNLOAD_STATUS_UPDATE_INTERVAL,
+    download_dict,
+    download_dict_lock,
+)
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.bot_utils import setInterval
-from bot.helper.ext_utils.exceptions import DirectDownloadLinkException, NotSupportedExtractionArchive
+from bot.helper.ext_utils.exceptions import (
+    DirectDownloadLinkException,
+    NotSupportedExtractionArchive,
+)
 from bot.helper.mirror_utils.download_utils.aria2_download import AriaDownloadHelper
 from bot.helper.mirror_utils.download_utils.direct_link_generator import direct_link_generator
 from bot.helper.mirror_utils.download_utils.telegram_downloader import TelegramDownloadHelper
@@ -17,6 +26,7 @@ from bot.helper.mirror_utils.upload_utils import gdriveTools
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.filters import CustomFilters
 from bot.helper.telegram_helper.message_utils import *
+from bot.helper.mirror_utils.download_utils.mega_download import MegaDownloader
 import pathlib
 import os
 import subprocess
@@ -25,6 +35,7 @@ import re
 
 ariaDlManager = AriaDownloadHelper()
 ariaDlManager.start_listener()
+
 
 class MirrorListener(listeners.MirrorListeners):
     def __init__(self, bot, update, pswd, isTar=False, tag=None, extract=False):
@@ -55,7 +66,7 @@ class MirrorListener(listeners.MirrorListeners):
             download = download_dict[self.uid]
             name = download.name()
             size = download.size_raw()
-            m_path = f'{DOWNLOAD_DIR}{self.uid}/{download.name()}'
+            m_path = f"{DOWNLOAD_DIR}{self.uid}/{download.name()}"
         if self.isTar:
             download.is_archiving = True
             try:
@@ -63,16 +74,14 @@ class MirrorListener(listeners.MirrorListeners):
                     download_dict[self.uid] = TarStatus(name, m_path, size)
                 path = fs_utils.tar(m_path)
             except FileNotFoundError:
-                LOGGER.info('File to archive not found!')
-                self.onUploadError('Internal error occurred!!')
+                LOGGER.info("File to archive not found!")
+                self.onUploadError("Internal error occurred!!")
                 return
         elif self.extract:
             download.is_extracting = True
             try:
                 path = fs_utils.get_base_name(m_path)
-                LOGGER.info(
-                    f"Extracting : {name} "
-                )
+                LOGGER.info(f"Extracting : {name} ")
                 with download_dict_lock:
                     download_dict[self.uid] = ExtractStatus(name, m_path, size)
                 pswd = self.pswd
@@ -84,21 +93,19 @@ class MirrorListener(listeners.MirrorListeners):
                     threading.Thread(target=os.remove, args=(m_path,)).start()
                     LOGGER.info(f"Deleting archive : {m_path}")
                 else:
-                    LOGGER.warning('Unable to extract archive! Uploading anyway')
-                    path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
-                LOGGER.info(
-                    f'got path : {path}'
-                )
+                    LOGGER.warning("Unable to extract archive! Uploading anyway")
+                    path = f"{DOWNLOAD_DIR}{self.uid}/{name}"
+                LOGGER.info(f"got path : {path}")
 
             except NotSupportedExtractionArchive:
                 LOGGER.info("Not any valid archive, uploading file as it is.")
-                path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
+                path = f"{DOWNLOAD_DIR}{self.uid}/{name}"
         else:
-            path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
+            path = f"{DOWNLOAD_DIR}{self.uid}/{name}"
         up_name = pathlib.PurePath(path).name
         if up_name == "None":
-            up_name = "".join(os.listdir(f'{DOWNLOAD_DIR}{self.uid}/'))
-        up_path = f'{DOWNLOAD_DIR}{self.uid}/{up_name}'
+            up_name = "".join(os.listdir(f"{DOWNLOAD_DIR}{self.uid}/"))
+        up_path = f"{DOWNLOAD_DIR}{self.uid}/{up_name}"
         LOGGER.info(f"Upload Name : {up_name}")
         drive = gdriveTools.GoogleDriveHelper(up_name, self)
         size = fs_utils.get_path_size(up_path)
@@ -109,8 +116,8 @@ class MirrorListener(listeners.MirrorListeners):
         drive.upload(up_name)
 
     def onDownloadError(self, error):
-        error = error.replace('<', ' ')
-        error = error.replace('>', ' ')
+        error = error.replace("<", " ")
+        error = error.replace(">", " ")
         LOGGER.info(self.update.effective_chat.id)
         with download_dict_lock:
             try:
@@ -143,15 +150,17 @@ class MirrorListener(listeners.MirrorListeners):
     def onUploadComplete(self, link: str, size):
         with download_dict_lock:
             msg = f'📁 <a href="{link}">{download_dict[self.uid].name()}</a>'
-            msg += f'\nSize: <i>({size})</i>'
-            LOGGER.info(f'Done Uploading {download_dict[self.uid].name()}')
+            msg += f"\nSize: <i>({size})</i>"
+            LOGGER.info(f"Done Uploading {download_dict[self.uid].name()}")
             if INDEX_URL is not None:
-                share_url = requests.utils.requote_uri(f'{INDEX_URL}/{download_dict[self.uid].name()}')
-                if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
-                    share_url += '/'
+                share_url = requests.utils.requote_uri(
+                    f"{INDEX_URL}/{download_dict[self.uid].name()}"
+                )
+                if os.path.isdir(f"{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}"):
+                    share_url += "/"
                 msg += f'\n\n👥 <a href="{share_url}">Shareable Link</a>'
             if self.tag is not None:
-                msg += f'\ncc: @{self.tag}'
+                msg += f"\ncc: @{self.tag}"
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())
             except FileNotFoundError:
@@ -165,7 +174,7 @@ class MirrorListener(listeners.MirrorListeners):
             update_all_messages()
 
     def onUploadError(self, error):
-        e_str = error.replace('<', '').replace('>', '')
+        e_str = error.replace("<", "").replace(">", "")
         with download_dict_lock:
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())
@@ -179,26 +188,27 @@ class MirrorListener(listeners.MirrorListeners):
         else:
             update_all_messages()
 
+
 def _mirror(bot, update, isTar=False, extract=False):
-    message_args = update.message.text.split(' ')
-    name_args = update.message.text.split('|')
+    message_args = update.message.text.split(" ")
+    name_args = update.message.text.split("|")
     try:
         link = message_args[1]
         if link.startswith("|") or link.startswith("pswd: "):
-            link = ''
+            link = ""
     except IndexError:
-        link = ''
+        link = ""
     try:
         name = name_args[1]
         name = name.strip()
         if name.startswith("pswd: "):
-            name = ''
+            name = ""
     except IndexError:
-        name = ''
-    pswd = re.search('(?<=pswd: )(.*)', update.message.text)
+        name = ""
+    pswd = re.search("(?<=pswd: )(.*)", update.message.text)
     if pswd is not None:
-      pswd = pswd.groups()
-      pswd = " ".join(pswd)
+        pswd = pswd.groups()
+        pswd = " ".join(pswd)
     LOGGER.info(link)
     link = link.strip()
     reply_to = update.message.reply_to_message
@@ -216,26 +226,31 @@ def _mirror(bot, update, isTar=False, extract=False):
                 if file.mime_type != "application/x-bittorrent":
                     listener = MirrorListener(bot, update, pswd, isTar, tag, extract)
                     tg_downloader = TelegramDownloadHelper(listener)
-                    tg_downloader.add_download(reply_to, f'{DOWNLOAD_DIR}{listener.uid}/', name)
+                    tg_downloader.add_download(reply_to, f"{DOWNLOAD_DIR}{listener.uid}/", name)
                     sendStatusMessage(update, bot)
                     if len(Interval) == 0:
-                        Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
+                        Interval.append(
+                            setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages)
+                        )
                     return
                 else:
                     link = file.get_file().file_path
     else:
         tag = None
     if not bot_utils.is_url(link) and not bot_utils.is_magnet(link):
-        sendMessage('No download source provided', bot, update)
+        sendMessage("No download source provided", bot, update)
         return
 
     try:
         link = direct_link_generator(link)
     except DirectDownloadLinkException as e:
-        LOGGER.info(f'{link}: {e}')
-
+        LOGGER.info(f"{link}: {e}")
     listener = MirrorListener(bot, update, pswd, isTar, tag, extract)
-    ariaDlManager.add_download(link, f'{DOWNLOAD_DIR}/{listener.uid}/', listener, name)
+    if bot_utils.is_mega_link(link) and MEGA_KEY is not None:
+        mega_dl = MegaDownloader(listener)
+        mega_dl.add_download(link, f"{DOWNLOAD_DIR}{listener.uid}/")
+    else:
+        ariaDlManager.add_download(link, f"{DOWNLOAD_DIR}{listener.uid}/", listener, name)
     sendStatusMessage(update, bot)
     if len(Interval) == 0:
         Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
@@ -253,15 +268,24 @@ def tar_mirror(update, context):
 
 @run_async
 def unzip_mirror(update, context):
-    _mirror(context.bot,update, extract=True)
+    _mirror(context.bot, update, extract=True)
 
 
-mirror_handler = CommandHandler(BotCommands.MirrorCommand, mirror,
-                                filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
-tar_mirror_handler = CommandHandler(BotCommands.TarMirrorCommand, tar_mirror,
-                                    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
-unzip_mirror_handler = CommandHandler(BotCommands.UnzipMirrorCommand, unzip_mirror,
-                                      filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+mirror_handler = CommandHandler(
+    BotCommands.MirrorCommand,
+    mirror,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+)
+tar_mirror_handler = CommandHandler(
+    BotCommands.TarMirrorCommand,
+    tar_mirror,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+)
+unzip_mirror_handler = CommandHandler(
+    BotCommands.UnzipMirrorCommand,
+    unzip_mirror,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+)
 dispatcher.add_handler(mirror_handler)
 dispatcher.add_handler(tar_mirror_handler)
 dispatcher.add_handler(unzip_mirror_handler)

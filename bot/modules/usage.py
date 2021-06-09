@@ -21,7 +21,7 @@ def dyno_usage(update, context):
             "Please fill <code>HEROKU_APP_NAME</code> and "
             "<code>HEROKU_API_KEY</code> in config var",
             context.bot,
-            update
+            update,
         )
         return
     Heroku = heroku3.from_key(HEROKU_API_KEY)
@@ -51,7 +51,7 @@ def dyno_usage(update, context):
             minutes_remain = quota_remain / 60
             hours = math.floor(minutes_remain / 60)
             minutes = math.floor(minutes_remain % 60)
-            
+
             """App Quota."""
             Apps = result["apps"]
             for apps in Apps:
@@ -65,19 +65,20 @@ def dyno_usage(update, context):
 
             AppHours = math.floor(AppQuotaUsed / 60)
             AppMinutes = math.floor(AppQuotaUsed % 60)
-            
+
             sendMessage(
                 f"<b>Dyno Usage for</b> <code>{app.name}</code> :\n"
                 f"• <code>{AppHours}</code> <b>Hours and</b> <code>{AppMinutes}</code> <b>Minutes - {AppPercent}%</b>\n\n"
                 "<b>Dyno Remaining this month :</b>\n"
                 f"• <code>{hours}</code> <b>Hours and</b> <code>{minutes}</code> <b>Minutes - {quota_percent}%</b>",
                 context.bot,
-                update
+                update,
             )
             return True
 
 
-dyno_usage_handler = CommandHandler(command=BotCommands.UsageCommand, callback=dyno_usage,
-                                    filters=CustomFilters.owner_filter)
-                                    
+dyno_usage_handler = CommandHandler(
+    command=BotCommands.UsageCommand, callback=dyno_usage, filters=CustomFilters.owner_filter
+)
+
 dispatcher.add_handler(dyno_usage_handler)
