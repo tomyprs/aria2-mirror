@@ -39,28 +39,11 @@ def send(msg, bot, update):
             chat_id=update.effective_chat.id, text=f"`{msg}`", parse_mode=ParseMode.MARKDOWN
         )
 
-
-def dev_plus(func):
-    @wraps(func)
-    def is_dev_plus_func(update: Update, context: CallbackContext, *args, **kwargs):
-        bot = context.bot
-        user = update.effective_user
-
-        if user.id != OWNER_ID:
-            return
-        return func(update, context, *args, **kwargs)
-
-    return is_dev_plus_func
-
-
-@dev_plus
 @run_async
 def evaluate(update: Update, context: CallbackContext):
     bot = context.bot
     send(do(eval, bot, update), bot, update)
 
-
-@dev_plus
 @run_async
 def execute(update: Update, context: CallbackContext):
     bot = context.bot
@@ -115,8 +98,6 @@ def do(func, bot, update):
         if result:
             return result
 
-
-@dev_plus
 @run_async
 def clear(update: Update, context: CallbackContext):
     bot = context.bot
