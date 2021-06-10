@@ -1,4 +1,5 @@
 import requests
+import re
 from telegram.ext import CommandHandler
 
 from bot import Interval, INDEX_URL, LOGGER, MEGA_KEY
@@ -183,9 +184,14 @@ class MirrorListener(listeners.MirrorListeners):
 
 
 def _mirror(bot, update, isTar=False, extract=False):
-    message_args = update.message.text.split(" ")
+    mesg = update.message.text.split('\n')
+    message_args = mesg[0].split(' ')
+    name_args = mesg[0].split('|')
     try:
         link = message_args[1]
+        print(link)
+        if link.startswith("|") or link.startswith("pswd: "):
+            link = ""
     except IndexError:
         link = ""
     LOGGER.info(link)
