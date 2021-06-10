@@ -53,7 +53,7 @@ def get_path_size(path):
 def tar(org_path):
     tar_path = org_path + ".tar"
     path = pathlib.PurePath(org_path)
-    LOGGER.info(f'Tar: orig_path: {org_path}, tar_path: {tar_path}')
+    LOGGER.info(f"Tar: orig_path: {org_path}, tar_path: {tar_path}")
     tar = tarfile.open(tar_path, "w")
     tar.add(org_path, arcname=os.path.basename(org_path))
     tar.close()
@@ -136,7 +136,7 @@ def get_base_name(orig_path: str):
     elif orig_path.endswith(".xar"):
         return orig_path.replace(".xar", "")
     else:
-        raise NotSupportedExtractionArchive('File format not supported for extraction')
+        raise NotSupportedExtractionArchive("File format not supported for extraction")
 
 
 def get_mime_type(file_path):

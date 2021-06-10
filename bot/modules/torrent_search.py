@@ -37,7 +37,7 @@ def tor_search(update, context):
 
         if reply_ == "":
             editMessage(f"No torrents found for {query}", msg)
-            
+
     except BaseException:
         editMessage("Torrent Search API is down\nTry again later", msg)
 
@@ -45,6 +45,7 @@ def tor_search(update, context):
 tor_search_handler = CommandHandler(
     command=BotCommands.TorrentSearchCommand,
     callback=tor_search,
-    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+    run_async=True,
 )
 dispatcher.add_handler(tor_search_handler)

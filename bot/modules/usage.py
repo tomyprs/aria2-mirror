@@ -18,9 +18,7 @@ def dyno_usage(update, context):
         app = Heroku.app(HEROKU_APP_NAME)
     else:
         sendMessage(
-            "Please insert your HEROKU_APP_NAME and HEROKU_API_KEY in Vars",
-            context.bot,
-            update
+            "Please insert your HEROKU_APP_NAME and HEROKU_API_KEY in Vars", context.bot, update
         )
     useragent = (
         "Mozilla/5.0 (Linux; Android 10; SM-G975F) "
@@ -61,7 +59,7 @@ def dyno_usage(update, context):
 
             AppHours = math.floor(AppQuotaUsed / 60)
             AppMinutes = math.floor(AppQuotaUsed % 60)
-            
+
             sendMessage(
                 f"<b>Dyno Usage for</b> <code>{app.name}</code>:\n"
                 f"• <code>{AppHours}</code> <b>Hours and</b> <code>{AppMinutes}</code> <b>Minutes - {AppPercent}%</b>\n\n"
@@ -70,12 +68,16 @@ def dyno_usage(update, context):
                 "<b>Estimated Dyno Expired:</b>\n"
                 f"• <code>{day}</code> <b>Days</b>",
                 context.bot,
-                update
+                update,
             )
             return True
 
 
-dyno_usage_handler = CommandHandler(command=BotCommands.UsageCommand, callback=dyno_usage,
-                                    filters=CustomFilters.owner_filter | CustomFilters.sudo_user, run_async=True)
-                                    
+dyno_usage_handler = CommandHandler(
+    command=BotCommands.UsageCommand,
+    callback=dyno_usage,
+    filters=CustomFilters.owner_filter | CustomFilters.sudo_user,
+    run_async=True,
+)
+
 dispatcher.add_handler(dyno_usage_handler)

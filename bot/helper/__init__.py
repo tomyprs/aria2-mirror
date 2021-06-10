@@ -4,6 +4,7 @@ import shlex
 from typing import Tuple
 from html_telegraph_poster import TelegraphPoster
 
+
 def post_to_telegraph(a_title: str, content: str) -> str:
     """ Create a Telegram Post using HTML Content """
     post_client = TelegraphPoster(use_api=True)

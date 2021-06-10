@@ -16,8 +16,8 @@ def speedtest(update, context):
     test.upload()
     test.results.share()
     result = test.results.dict()
-    path = (result['share'])
-    string_speed = f'''
+    path = result["share"]
+    string_speed = f"""
 <b>Server</b>
 <b>Name:</b> <code>{result['server']['name']}</code>
 <b>Country:</b> <code>{result['server']['country']}, {result['server']['cc']}</code>
@@ -28,12 +28,13 @@ def speedtest(update, context):
 <b>Download:</b>  <code>{speed_convert(result['download'] / 8)}</code>
 <b>Ping:</b> <code>{result['ping']} ms</code>
 <b>ISP:</b> <code>{result['client']['isp']}</code>
-'''
+"""
     ed_msg.delete()
     try:
         update.effective_message.reply_photo(path, string_speed, parse_mode=ParseMode.HTML)
     except:
         update.effective_message.reply_text(string_speed, parse_mode=ParseMode.HTML)
+
 
 def speed_convert(size):
     """Hi human, you can't read bytes?"""
@@ -46,7 +47,11 @@ def speed_convert(size):
     return f"{round(size, 2)} {units[zero]}"
 
 
-SPEED_HANDLER = CommandHandler(BotCommands.SpeedCommand, speedtest, 
-                                                  filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
+SPEED_HANDLER = CommandHandler(
+    BotCommands.SpeedCommand,
+    speedtest,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+    run_async=True,
+)
 
 dispatcher.add_handler(SPEED_HANDLER)

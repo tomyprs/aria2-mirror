@@ -32,46 +32,46 @@ def direct_link_generator(link: str):
     """ direct links generator """
     if not link:
         raise DirectDownloadLinkException("`No links found!`")
-    elif 'zippyshare.com' in link:
+    elif "zippyshare.com" in link:
         return zippy_share(link)
-    elif 'yadi.sk' in link:
+    elif "yadi.sk" in link:
         return yandex_disk(link)
-    elif 'cloud.mail.ru' in link:
+    elif "cloud.mail.ru" in link:
         return cm_ru(link)
-    elif 'mediafire.com' in link:
+    elif "mediafire.com" in link:
         return mediafire(link)
-    elif 'uptobox.com' in link:
+    elif "uptobox.com" in link:
         return uptobox(link)
-    elif 'osdn.net' in link:
+    elif "osdn.net" in link:
         return osdn(link)
-    elif 'github.com' in link:
+    elif "github.com" in link:
         return github(link)
-    elif 'racaty.net' in link:
+    elif "racaty.net" in link:
         return racaty(link)
-    elif 'hxfile.co' in link:
+    elif "hxfile.co" in link:
         return hxfile(link)
-    elif 'anonfiles.com' in link:
+    elif "anonfiles.com" in link:
         return anon(link)
-    elif 'fembed.com' in link:
+    elif "fembed.com" in link:
         return fembed(link)
-    elif 'femax20.com' in link:
+    elif "femax20.com" in link:
         return fembed(link)
-    elif 'naniplay.nanime.in' in link:
+    elif "naniplay.nanime.in" in link:
         return fembed(link)
-    elif 'naniplay.nanime.biz' in link:
+    elif "naniplay.nanime.biz" in link:
         return fembed(link)
-    elif 'naniplay.com' in link:
+    elif "naniplay.com" in link:
         return fembed(link)
-    elif 'layarkacaxxi.icu' in link:
+    elif "layarkacaxxi.icu" in link:
         return fembed(link)
-    elif 'sbembed.com' in link:
+    elif "sbembed.com" in link:
         return sbembed(link)
-    elif 'streamsb.net' in link:
+    elif "streamsb.net" in link:
         return sbembed(link)
-    elif '1drv.ms' in link:
+    elif "1drv.ms" in link:
         return onedrive(link)
     else:
-        raise DirectDownloadLinkException(f'No Direct link function found for {link}')
+        raise DirectDownloadLinkException(f"No Direct link function found for {link}")
 
 
 def zippy_share(url: str) -> str:
@@ -100,99 +100,101 @@ def zippy_share(url: str) -> str:
 
 
 def yandex_disk(url: str) -> str:
-    """ Yandex.Disk direct links generator
-    Based on https://github.com/wldhx/yadisk-direct """
+    """Yandex.Disk direct links generator
+    Based on https://github.com/wldhx/yadisk-direct"""
     try:
-        link = re.findall(r'\bhttps?://.*yadi\.sk\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*yadi\.sk\S+", url)[0]
     except IndexError:
         reply = "`No Yandex.Disk links found`\n"
         return reply
-    api = 'https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}'
+    api = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}"
     try:
-        dl_url = requests.get(api.format(link)).json()['href']
+        dl_url = requests.get(api.format(link)).json()["href"]
         return dl_url
     except KeyError:
         raise DirectDownloadLinkException("`Error: File not found/Download limit reached`\n")
 
 
 def cm_ru(url: str) -> str:
-    """ cloud.mail.ru direct links generator
-    Using https://github.com/JrMasterModelBuilder/cmrudl.py """
-    reply = ''
+    """cloud.mail.ru direct links generator
+    Using https://github.com/JrMasterModelBuilder/cmrudl.py"""
+    reply = ""
     try:
-        link = re.findall(r'\bhttps?://.*cloud\.mail\.ru\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*cloud\.mail\.ru\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No cloud.mail.ru links found`\n")
-    command = f'vendor/cmrudl.py/cmrudl -s {link}'
+    command = f"vendor/cmrudl.py/cmrudl -s {link}"
     result = popen(command).read()
     result = result.splitlines()[-1]
     try:
         data = json.loads(result)
     except json.decoder.JSONDecodeError:
         raise DirectDownloadLinkException("`Error: Can't extract the link`\n")
-    dl_url = data['download']
+    dl_url = data["download"]
     return dl_url
 
 
 def uptobox(url: str) -> str:
-    """ Uptobox direct links generator
-    based on https://github.com/jovanzers/WinTenCermin """
+    """Uptobox direct links generator
+    based on https://github.com/jovanzers/WinTenCermin"""
     try:
-        link = re.findall(r'\bhttps?://.*uptobox\.com\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*uptobox\.com\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No Uptobox links found`\n")
     if UPTOBOX_TOKEN is None:
-        logging.error('UPTOBOX_TOKEN not provided!')
+        logging.error("UPTOBOX_TOKEN not provided!")
         dl_url = url
     else:
         try:
-            link = re.findall(r'\bhttp?://.*uptobox\.com/dl\S+', url)[0]
-            logging.info('Uptobox direct link')
+            link = re.findall(r"\bhttp?://.*uptobox\.com/dl\S+", url)[0]
+            logging.info("Uptobox direct link")
             dl_url = url
         except:
-            file_id = re.findall(r'\bhttps?://.*uptobox\.com/(\w+)', url)[0]
-            file_link = 'https://uptobox.com/api/link?token=%s&file_code=%s' % (UPTOBOX_TOKEN, file_id)
+            file_id = re.findall(r"\bhttps?://.*uptobox\.com/(\w+)", url)[0]
+            file_link = "https://uptobox.com/api/link?token=%s&file_code=%s" % (
+                UPTOBOX_TOKEN,
+                file_id,
+            )
             req = requests.get(file_link)
             result = req.json()
-            dl_url = result['data']['dlLink']
+            dl_url = result["data"]["dlLink"]
     return dl_url
 
 
 def mediafire(url: str) -> str:
     """ MediaFire direct links generator """
     try:
-        link = re.findall(r'\bhttps?://.*mediafire\.com\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*mediafire\.com\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No MediaFire links found`\n")
-    page = BeautifulSoup(requests.get(link).content, 'lxml')
-    info = page.find('a', {'aria-label': 'Download file'})
-    dl_url = info.get('href')
+    page = BeautifulSoup(requests.get(link).content, "lxml")
+    info = page.find("a", {"aria-label": "Download file"})
+    dl_url = info.get("href")
     return dl_url
 
 
 def osdn(url: str) -> str:
     """ OSDN direct links generator """
-    osdn_link = 'https://osdn.net'
+    osdn_link = "https://osdn.net"
     try:
-        link = re.findall(r'\bhttps?://.*osdn\.net\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*osdn\.net\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No OSDN links found`\n")
-    page = BeautifulSoup(
-        requests.get(link, allow_redirects=True).content, 'lxml')
-    info = page.find('a', {'class': 'mirror_link'})
-    link = urllib.parse.unquote(osdn_link + info['href'])
-    mirrors = page.find('form', {'id': 'mirror-select-form'}).findAll('tr')
+    page = BeautifulSoup(requests.get(link, allow_redirects=True).content, "lxml")
+    info = page.find("a", {"class": "mirror_link"})
+    link = urllib.parse.unquote(osdn_link + info["href"])
+    mirrors = page.find("form", {"id": "mirror-select-form"}).findAll("tr")
     urls = []
     for data in mirrors[1:]:
-        mirror = data.find('input')['value']
-        urls.append(re.sub(r'm=(.*)&f', f'm={mirror}&f', link))
+        mirror = data.find("input")["value"]
+        urls.append(re.sub(r"m=(.*)&f", f"m={mirror}&f", link))
     return urls[0]
 
 
 def github(url: str) -> str:
     """ GitHub direct links generator """
     try:
-        re.findall(r'\bhttps?://.*github\.com.*releases\S+', url)[0]
+        re.findall(r"\bhttps?://.*github\.com.*releases\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No GitHub Releases links found`\n")
     download = requests.get(url, stream=True, allow_redirects=False)
@@ -204,76 +206,76 @@ def github(url: str) -> str:
 
 
 def racaty(url: str) -> str:
-    """ Racaty direct links generator
-    based on https://github.com/breakdowns/slam-mirrorbot """
-    dl_url = ''
+    """Racaty direct links generator
+    based on https://github.com/breakdowns/slam-mirrorbot"""
+    dl_url = ""
     try:
-        link = re.findall(r'\bhttps?://.*racaty\.net\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*racaty\.net\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No Racaty links found`\n")
-    reqs=requests.get(link)
-    bss=BeautifulSoup(reqs.text,'html.parser')
-    op=bss.find('input',{'name':'op'})['value']
-    id=bss.find('input',{'name':'id'})['value']
-    rep=requests.post(link,data={'op':op,'id':id})
-    bss2=BeautifulSoup(rep.text,'html.parser')
-    dl_url=bss2.find('a',{'id':'uniqueExpirylink'})['href']
+    reqs = requests.get(link)
+    bss = BeautifulSoup(reqs.text, "html.parser")
+    op = bss.find("input", {"name": "op"})["value"]
+    id = bss.find("input", {"name": "id"})["value"]
+    rep = requests.post(link, data={"op": op, "id": id})
+    bss2 = BeautifulSoup(rep.text, "html.parser")
+    dl_url = bss2.find("a", {"id": "uniqueExpirylink"})["href"]
     return dl_url
 
 
 def hxfile(url: str) -> str:
-    """ Hxfile direct links generator
-    based on https://github.com/breakdowns/slam-mirrorbot """
-    dl_url = ''
+    """Hxfile direct links generator
+    based on https://github.com/breakdowns/slam-mirrorbot"""
+    dl_url = ""
     try:
-        link = re.findall(r'\bhttps?://.*hxfile\.co\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*hxfile\.co\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No Hxfile links found`\n")
     bypasser = lk21.Bypass()
-    dl_url=bypasser.bypass_url(link)
+    dl_url = bypasser.bypass_url(link)
     return dl_url
 
 
 def anon(url: str) -> str:
-    """ Anonfiles direct links generator
-    based on https://github.com/breakdowns/slam-mirrorbot """
-    dl_url = ''
+    """Anonfiles direct links generator
+    based on https://github.com/breakdowns/slam-mirrorbot"""
+    dl_url = ""
     try:
-        link = re.findall(r'\bhttps?://.*anonfiles\.com\S+', url)[0]
+        link = re.findall(r"\bhttps?://.*anonfiles\.com\S+", url)[0]
     except IndexError:
         raise DirectDownloadLinkException("`No Anonfiles links found`\n")
     bypasser = lk21.Bypass()
-    dl_url=bypasser.bypass_url(link)
+    dl_url = bypasser.bypass_url(link)
     return dl_url
 
 
 def fembed(link: str) -> str:
-    """ Fembed direct link generator
-    Based on https://github.com/breakdowns/slam-mirrorbot """
+    """Fembed direct link generator
+    Based on https://github.com/breakdowns/slam-mirrorbot"""
     bypasser = lk21.Bypass()
-    dl_url=bypasser.bypass_fembed(link)
+    dl_url = bypasser.bypass_fembed(link)
     lst_link = []
     count = len(dl_url)
     for i in dl_url:
         lst_link.append(dl_url[i])
-    return lst_link[count-1]
+    return lst_link[count - 1]
 
 
 def sbembed(link: str) -> str:
-    """ Sbembed direct link generator
-    Based on https://github.com/breakdowns/slam-mirrorbot """
+    """Sbembed direct link generator
+    Based on https://github.com/breakdowns/slam-mirrorbot"""
     bypasser = lk21.Bypass()
-    dl_url=bypasser.bypass_sbembed(link)
+    dl_url = bypasser.bypass_sbembed(link)
     lst_link = []
     count = len(dl_url)
     for i in dl_url:
         lst_link.append(dl_url[i])
-    return lst_link[count-1]
+    return lst_link[count - 1]
 
 
 def onedrive(link: str) -> str:
-    """ Onedrive direct link generator
-    Based on https://github.com/UsergeTeam/Userge """
+    """Onedrive direct link generator
+    Based on https://github.com/UsergeTeam/Userge"""
     link_without_query = urlparse(link)._replace(query=None).geturl()
     direct_link_encoded = str(standard_b64encode(bytes(link_without_query, "utf-8")), "utf-8")
     direct_link1 = f"https://api.onedrive.com/v1.0/shares/u!{direct_link_encoded}/root/content"
@@ -292,8 +294,10 @@ def useragent():
     """
     useragents = BeautifulSoup(
         requests.get(
-            'https://developers.whatismybrowser.com/'
-            'useragents/explore/operating_system_name/android/').content,
-        'lxml').findAll('td', {'class': 'useragent'})
+            "https://developers.whatismybrowser.com/"
+            "useragents/explore/operating_system_name/android/"
+        ).content,
+        "lxml",
+    ).findAll("td", {"class": "useragent"})
     user_agent = choice(useragents)
     return user_agent.text

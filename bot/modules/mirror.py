@@ -2,11 +2,34 @@ import requests
 from telegram.ext import CommandHandler
 from telegram import InlineKeyboardMarkup
 
-from bot import Interval, INDEX_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BUTTON_SIX_NAME, BUTTON_SIX_URL, BLOCK_MEGA_FOLDER, BLOCK_MEGA_LINKS, VIEW_LINK
-from bot import dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock, SHORTENER, SHORTENER_API
+from bot import (
+    Interval,
+    INDEX_URL,
+    BUTTON_FOUR_NAME,
+    BUTTON_FOUR_URL,
+    BUTTON_FIVE_NAME,
+    BUTTON_FIVE_URL,
+    BUTTON_SIX_NAME,
+    BUTTON_SIX_URL,
+    BLOCK_MEGA_FOLDER,
+    BLOCK_MEGA_LINKS,
+    VIEW_LINK,
+)
+from bot import (
+    dispatcher,
+    DOWNLOAD_DIR,
+    DOWNLOAD_STATUS_UPDATE_INTERVAL,
+    download_dict,
+    download_dict_lock,
+    SHORTENER,
+    SHORTENER_API,
+)
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.bot_utils import setInterval, get_mega_link_type
-from bot.helper.ext_utils.exceptions import DirectDownloadLinkException, NotSupportedExtractionArchive
+from bot.helper.ext_utils.exceptions import (
+    DirectDownloadLinkException,
+    NotSupportedExtractionArchive,
+)
 from bot.helper.mirror_utils.download_utils.aria2_download import AriaDownloadHelper
 from bot.helper.mirror_utils.download_utils.mega_downloader import MegaDownloadHelper
 from bot.helper.mirror_utils.download_utils.direct_link_generator import direct_link_generator
@@ -29,6 +52,7 @@ import re
 
 ariaDlManager = AriaDownloadHelper()
 ariaDlManager.start_listener()
+
 
 class MirrorListener(listeners.MirrorListeners):
     def __init__(self, bot, update, pswd, isTar=False, tag=None, extract=False):
@@ -59,9 +83,9 @@ class MirrorListener(listeners.MirrorListeners):
             download = download_dict[self.uid]
             name = download.name()
             size = download.size_raw()
-            if name is None: # when pyrogram's media.file_name is of NoneType
-                name = os.listdir(f'{DOWNLOAD_DIR}{self.uid}')[0]
-            m_path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
+            if name is None:  # when pyrogram's media.file_name is of NoneType
+                name = os.listdir(f"{DOWNLOAD_DIR}{self.uid}")[0]
+            m_path = f"{DOWNLOAD_DIR}{self.uid}/{name}"
         if self.isTar:
             download.is_archiving = True
             try:
@@ -69,16 +93,14 @@ class MirrorListener(listeners.MirrorListeners):
                     download_dict[self.uid] = TarStatus(name, m_path, size)
                 path = fs_utils.tar(m_path)
             except FileNotFoundError:
-                LOGGER.info('File to archive not found!')
-                self.onUploadError('Internal error occurred!!')
+                LOGGER.info("File to archive not found!")
+                self.onUploadError("Internal error occurred!!")
                 return
         elif self.extract:
             download.is_extracting = True
             try:
                 path = fs_utils.get_base_name(m_path)
-                LOGGER.info(
-                    f"Extracting : {name} "
-                )
+                LOGGER.info(f"Extracting : {name} ")
                 with download_dict_lock:
                     download_dict[self.uid] = ExtractStatus(name, m_path, size)
                 pswd = self.pswd
@@ -90,21 +112,19 @@ class MirrorListener(listeners.MirrorListeners):
                     threading.Thread(target=os.remove, args=(m_path,)).start()
                     LOGGER.info(f"Deleting archive : {m_path}")
                 else:
-                    LOGGER.warning('Unable to extract archive! Uploading anyway')
-                    path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
-                LOGGER.info(
-                    f'got path : {path}'
-                )
+                    LOGGER.warning("Unable to extract archive! Uploading anyway")
+                    path = f"{DOWNLOAD_DIR}{self.uid}/{name}"
+                LOGGER.info(f"got path : {path}")
 
             except NotSupportedExtractionArchive:
                 LOGGER.info("Not any valid archive, uploading file as it is.")
-                path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
+                path = f"{DOWNLOAD_DIR}{self.uid}/{name}"
         else:
-            path = f'{DOWNLOAD_DIR}{self.uid}/{name}'
+            path = f"{DOWNLOAD_DIR}{self.uid}/{name}"
         up_name = pathlib.PurePath(path).name
-        up_path = f'{DOWNLOAD_DIR}{self.uid}/{up_name}'
+        up_path = f"{DOWNLOAD_DIR}{self.uid}/{up_name}"
         if up_name == "None":
-            up_name = "".join(os.listdir(f'{DOWNLOAD_DIR}{self.uid}/'))
+            up_name = "".join(os.listdir(f"{DOWNLOAD_DIR}{self.uid}/"))
         LOGGER.info(f"Upload Name : {up_name}")
         drive = gdriveTools.GoogleDriveHelper(up_name, self)
         size = fs_utils.get_path_size(up_path)
@@ -115,8 +135,8 @@ class MirrorListener(listeners.MirrorListeners):
         drive.upload(up_name)
 
     def onDownloadError(self, error):
-        error = error.replace('<', ' ')
-        error = error.replace('>', ' ')
+        error = error.replace("<", " ")
+        error = error.replace(">", " ")
         LOGGER.info(self.update.effective_chat.id)
         with download_dict_lock:
             try:
@@ -148,35 +168,43 @@ class MirrorListener(listeners.MirrorListeners):
 
     def onUploadComplete(self, link: str, size, files, folders, typ):
         with download_dict_lock:
-            msg = f'<b>Filename: </b><code>{download_dict[self.uid].name()}</code>\n<b>Size: </b><code>{size}</code>'
-            if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
-                msg += '\n<b>Type: </b><code>Folder</code>'
-                msg += f'\n<b>SubFolders: </b><code>{folders}</code>'
-                msg += f'\n<b>Files: </b><code>{files}</code>'
+            msg = f"<b>Filename: </b><code>{download_dict[self.uid].name()}</code>\n<b>Size: </b><code>{size}</code>"
+            if os.path.isdir(f"{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}"):
+                msg += "\n<b>Type: </b><code>Folder</code>"
+                msg += f"\n<b>SubFolders: </b><code>{folders}</code>"
+                msg += f"\n<b>Files: </b><code>{files}</code>"
             else:
-                msg += f'\n<b>Type: </b><code>{typ}</code>'
+                msg += f"\n<b>Type: </b><code>{typ}</code>"
             buttons = button_build.ButtonMaker()
             if SHORTENER is not None and SHORTENER_API is not None:
-                surl = requests.get(f'https://{SHORTENER}/api?api={SHORTENER_API}&url={link}&format=text').text
+                surl = requests.get(
+                    f"https://{SHORTENER}/api?api={SHORTENER_API}&url={link}&format=text"
+                ).text
                 buttons.buildbutton("☁️ Drive Link", surl)
             else:
                 buttons.buildbutton("☁️ Drive Link", link)
-            LOGGER.info(f'Done Uploading {download_dict[self.uid].name()}')
+            LOGGER.info(f"Done Uploading {download_dict[self.uid].name()}")
             if INDEX_URL is not None:
-                url_path = requests.utils.quote(f'{download_dict[self.uid].name()}')
-                share_url = f'{INDEX_URL}/{url_path}'
-                if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
-                    share_url += '/'
+                url_path = requests.utils.quote(f"{download_dict[self.uid].name()}")
+                share_url = f"{INDEX_URL}/{url_path}"
+                if os.path.isdir(f"{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}"):
+                    share_url += "/"
                     if SHORTENER is not None and SHORTENER_API is not None:
-                        siurl = requests.get(f'https://{SHORTENER}/api?api={SHORTENER_API}&url={share_url}&format=text').text
+                        siurl = requests.get(
+                            f"https://{SHORTENER}/api?api={SHORTENER_API}&url={share_url}&format=text"
+                        ).text
                         buttons.buildbutton("⚡ Index Link", siurl)
                     else:
                         buttons.buildbutton("⚡ Index Link", share_url)
                 else:
-                    share_urls = f'{INDEX_URL}/{url_path}?a=view'
+                    share_urls = f"{INDEX_URL}/{url_path}?a=view"
                     if SHORTENER is not None and SHORTENER_API is not None:
-                        siurl = requests.get(f'https://{SHORTENER}/api?api={SHORTENER_API}&url={share_url}&format=text').text
-                        siurls = requests.get(f'https://{SHORTENER}/api?api={SHORTENER_API}&url={share_urls}&format=text').text
+                        siurl = requests.get(
+                            f"https://{SHORTENER}/api?api={SHORTENER_API}&url={share_url}&format=text"
+                        ).text
+                        siurls = requests.get(
+                            f"https://{SHORTENER}/api?api={SHORTENER_API}&url={share_urls}&format=text"
+                        ).text
                         buttons.buildbutton("⚡ Index Link", siurl)
                         if VIEW_LINK:
                             buttons.buildbutton("🌐 View Link", siurls)
@@ -195,7 +223,7 @@ class MirrorListener(listeners.MirrorListeners):
             else:
                 uname = f'<a href="tg://user?id={self.message.from_user.id}">{self.message.from_user.first_name}</a>'
             if uname is not None:
-                msg += f'\n\ncc: {uname}'
+                msg += f"\n\ncc: {uname}"
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())
             except FileNotFoundError:
@@ -209,7 +237,7 @@ class MirrorListener(listeners.MirrorListeners):
             update_all_messages()
 
     def onUploadError(self, error):
-        e_str = error.replace('<', '').replace('>', '')
+        e_str = error.replace("<", "").replace(">", "")
         with download_dict_lock:
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())
@@ -223,37 +251,38 @@ class MirrorListener(listeners.MirrorListeners):
         else:
             update_all_messages()
 
+
 def _mirror(bot, update, isTar=False, extract=False):
-    mesg = update.message.text.split('\n')
-    message_args = mesg[0].split(' ')
-    name_args = mesg[0].split('|')
+    mesg = update.message.text.split("\n")
+    message_args = mesg[0].split(" ")
+    name_args = mesg[0].split("|")
     try:
         link = message_args[1]
         print(link)
         if link.startswith("|") or link.startswith("pswd: "):
-            link = ''
+            link = ""
     except IndexError:
-        link = ''
+        link = ""
     try:
         name = name_args[1]
         name = name.strip()
         if name.startswith("pswd: "):
-            name = ''
+            name = ""
     except IndexError:
-        name = ''
+        name = ""
     try:
-        ussr = urllib.parse.quote(mesg[1], safe='')
-        pssw = urllib.parse.quote(mesg[2], safe='')
+        ussr = urllib.parse.quote(mesg[1], safe="")
+        pssw = urllib.parse.quote(mesg[2], safe="")
     except:
-        ussr = ''
-        pssw = ''
-    if ussr != '' and pssw != '':
+        ussr = ""
+        pssw = ""
+    if ussr != "" and pssw != "":
         link = link.split("://", maxsplit=1)
-        link = f'{link[0]}://{ussr}:{pssw}@{link[1]}'
-    pswd = re.search('(?<=pswd: )(.*)', update.message.text)
+        link = f"{link[0]}://{ussr}:{pssw}@{link[1]}"
+    pswd = re.search("(?<=pswd: )(.*)", update.message.text)
     if pswd is not None:
-      pswd = pswd.groups()
-      pswd = " ".join(pswd)
+        pswd = pswd.groups()
+        pswd = " ".join(pswd)
     LOGGER.info(link)
     link = link.strip()
     reply_to = update.message.reply_to_message
@@ -271,23 +300,25 @@ def _mirror(bot, update, isTar=False, extract=False):
                 if file.mime_type != "application/x-bittorrent":
                     listener = MirrorListener(bot, update, pswd, isTar, tag, extract)
                     tg_downloader = TelegramDownloadHelper(listener)
-                    tg_downloader.add_download(reply_to, f'{DOWNLOAD_DIR}{listener.uid}/', name)
+                    tg_downloader.add_download(reply_to, f"{DOWNLOAD_DIR}{listener.uid}/", name)
                     sendStatusMessage(update, bot)
                     if len(Interval) == 0:
-                        Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
+                        Interval.append(
+                            setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages)
+                        )
                     return
                 else:
                     link = file.get_file().file_path
     else:
         tag = None
     if not bot_utils.is_url(link) and not bot_utils.is_magnet(link):
-        sendMessage('No download source provided', bot, update)
+        sendMessage("No download source provided", bot, update)
         return
 
     try:
         link = direct_link_generator(link)
     except DirectDownloadLinkException as e:
-        LOGGER.info(f'{link}: {e}')
+        LOGGER.info(f"{link}: {e}")
     listener = MirrorListener(bot, update, pswd, isTar, tag, extract)
     if bot_utils.is_mega_link(link):
         link_type = get_mega_link_type(link)
@@ -297,10 +328,10 @@ def _mirror(bot, update, isTar=False, extract=False):
             sendMessage("Mega links are blocked!", bot, update)
         else:
             mega_dl = MegaDownloadHelper()
-            mega_dl.add_download(link, f'{DOWNLOAD_DIR}/{listener.uid}/', listener)
+            mega_dl.add_download(link, f"{DOWNLOAD_DIR}/{listener.uid}/", listener)
             sendStatusMessage(update, bot)
     else:
-        ariaDlManager.add_download(link, f'{DOWNLOAD_DIR}/{listener.uid}/', listener, name)
+        ariaDlManager.add_download(link, f"{DOWNLOAD_DIR}/{listener.uid}/", listener, name)
         sendStatusMessage(update, bot)
     if len(Interval) == 0:
         Interval.append(setInterval(DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
@@ -318,12 +349,24 @@ def unzip_mirror(update, context):
     _mirror(context.bot, update, extract=True)
 
 
-mirror_handler = CommandHandler(BotCommands.MirrorCommand, mirror,
-                                filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
-tar_mirror_handler = CommandHandler(BotCommands.TarMirrorCommand, tar_mirror,
-                                    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
-unzip_mirror_handler = CommandHandler(BotCommands.UnzipMirrorCommand, unzip_mirror,
-                                      filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
+mirror_handler = CommandHandler(
+    BotCommands.MirrorCommand,
+    mirror,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+    run_async=True,
+)
+tar_mirror_handler = CommandHandler(
+    BotCommands.TarMirrorCommand,
+    tar_mirror,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+    run_async=True,
+)
+unzip_mirror_handler = CommandHandler(
+    BotCommands.UnzipMirrorCommand,
+    unzip_mirror,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+    run_async=True,
+)
 dispatcher.add_handler(mirror_handler)
 dispatcher.add_handler(tar_mirror_handler)
 dispatcher.add_handler(unzip_mirror_handler)

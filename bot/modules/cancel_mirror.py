@@ -29,9 +29,11 @@ def cancel_mirror(update, context):
             dl = download_dict[mirror_message.message_id]
     if len(args) == 1:
         if mirror_message is None or mirror_message.message_id not in keys:
-            if BotCommands.MirrorCommand in update.message.text or \
-               BotCommands.TarMirrorCommand in update.message.text or \
-               BotCommands.UnzipMirrorCommand in update.message.text:
+            if (
+                BotCommands.MirrorCommand in update.message.text
+                or BotCommands.TarMirrorCommand in update.message.text
+                or BotCommands.UnzipMirrorCommand in update.message.text
+            ):
                 msg = "Mirror already have been cancelled"
                 sendMessage(msg, context.bot, update)
                 return
@@ -51,24 +53,36 @@ def cancel_mirror(update, context):
     else:
         dl.download().cancel_download()
     sleep(1)  # Wait a Second For Aria2 To free Resources.
-    clean_download(f'{DOWNLOAD_DIR}{mirror_message.message_id}/')
+    clean_download(f"{DOWNLOAD_DIR}{mirror_message.message_id}/")
 
 
 def cancel_all(update, context):
     with download_dict_lock:
         count = 0
         for dlDetails in list(download_dict.values()):
-            if dlDetails.status() == MirrorStatus.STATUS_DOWNLOADING \
-                    or dlDetails.status() == MirrorStatus.STATUS_WAITING:
+            if (
+                dlDetails.status() == MirrorStatus.STATUS_DOWNLOADING
+                or dlDetails.status() == MirrorStatus.STATUS_WAITING
+            ):
                 dlDetails.download().cancel_download()
                 count += 1
     delete_all_messages()
-    sendMessage(f'Cancelled {count} downloads!', context.bot, update)
+    sendMessage(f"Cancelled {count} downloads!", context.bot, update)
 
 
-cancel_mirror_handler = CommandHandler(BotCommands.CancelMirror, cancel_mirror,
-                                       filters=(CustomFilters.authorized_chat | CustomFilters.authorized_user) & CustomFilters.mirror_owner_filter | CustomFilters.sudo_user, run_async=True)
-cancel_all_handler = CommandHandler(BotCommands.CancelAllCommand, cancel_all,
-                                    filters=CustomFilters.owner_filter | CustomFilters.sudo_user, run_async=True)
+cancel_mirror_handler = CommandHandler(
+    BotCommands.CancelMirror,
+    cancel_mirror,
+    filters=(CustomFilters.authorized_chat | CustomFilters.authorized_user)
+    & CustomFilters.mirror_owner_filter
+    | CustomFilters.sudo_user,
+    run_async=True,
+)
+cancel_all_handler = CommandHandler(
+    BotCommands.CancelAllCommand,
+    cancel_all,
+    filters=CustomFilters.owner_filter | CustomFilters.sudo_user,
+    run_async=True,
+)
 dispatcher.add_handler(cancel_all_handler)
 dispatcher.add_handler(cancel_mirror_handler)

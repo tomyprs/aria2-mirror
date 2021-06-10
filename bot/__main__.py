@@ -18,16 +18,33 @@ from bot.helper.telegram_helper.message_utils import *
 from .helper.ext_utils.bot_utils import get_readable_file_size, get_readable_time
 from .helper.telegram_helper.filters import CustomFilters
 from bot.helper.telegram_helper import button_build
-from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clone, watch, shell, eval, anime, search, delete, speedtest, usage, mediainfo, count
+from .modules import (
+    authorize,
+    list,
+    cancel_mirror,
+    mirror_status,
+    mirror,
+    clone,
+    watch,
+    shell,
+    eval,
+    anime,
+    search,
+    delete,
+    speedtest,
+    usage,
+    mediainfo,
+    count,
+)
 
-now=datetime.now(pytz.timezone('Asia/Jakarta'))
+now = datetime.now(pytz.timezone("Asia/Jakarta"))
 
 
 @run_async
 def stats(update, context):
     currentTime = get_readable_time(time.time() - botStartTime)
-    current = now.strftime('%Y/%m/%d %I:%M:%S %p')
-    total, used, free = shutil.disk_usage('.')
+    current = now.strftime("%Y/%m/%d %I:%M:%S %p")
+    total, used, free = shutil.disk_usage(".")
     total = get_readable_file_size(total)
     used = get_readable_file_size(used)
     free = get_readable_file_size(free)
@@ -35,23 +52,25 @@ def stats(update, context):
     recv = get_readable_file_size(psutil.net_io_counters().bytes_recv)
     cpuUsage = psutil.cpu_percent(interval=0.5)
     memory = psutil.virtual_memory().percent
-    disk = psutil.disk_usage('/').percent
-    stats = f'<b>Bot Uptime:</b> {currentTime}\n' \
-            f'<b>Start Time:</b> {current}\n' \
-            f'<b>Total Disk Space:</b> {total}\n' \
-            f'<b>Used:</b> {used}  ' \
-            f'<b>Free:</b> {free}\n\n' \
-            f'📊Data Usage📊\n<b>Upload:</b> {sent}\n' \
-            f'<b>Download:</b> {recv}\n\n' \
-            f'<b>CPU:</b> {cpuUsage}%\n' \
-            f'<b>RAM:</b> {memory}%\n' \
-            f'<b>DISK:</b> {disk}%'
+    disk = psutil.disk_usage("/").percent
+    stats = (
+        f"<b>Bot Uptime:</b> {currentTime}\n"
+        f"<b>Start Time:</b> {current}\n"
+        f"<b>Total Disk Space:</b> {total}\n"
+        f"<b>Used:</b> {used}  "
+        f"<b>Free:</b> {free}\n\n"
+        f"📊Data Usage📊\n<b>Upload:</b> {sent}\n"
+        f"<b>Download:</b> {recv}\n\n"
+        f"<b>CPU:</b> {cpuUsage}%\n"
+        f"<b>RAM:</b> {memory}%\n"
+        f"<b>DISK:</b> {disk}%"
+    )
     update.effective_message.reply_text(stats, parse_mode=ParseMode.HTML)
 
 
 def restart(update, context):
     restart_message = sendMessage("Restarting, Please wait!", context.bot, update)
-    LOGGER.info(f'Restarting the Bot...')
+    LOGGER.info(f"Restarting the Bot...")
     # Save restart message object in order to reply to it after restarting
     with open(".restartmsg", "w") as f:
         f.truncate(0)
@@ -64,7 +83,7 @@ def ping(update, context):
     start_time = int(round(time.time() * 1000))
     reply = sendMessage("Starting Ping", context.bot, update)
     end_time = int(round(time.time() * 1000))
-    editMessage(f'{end_time - start_time} ms', reply)
+    editMessage(f"{end_time - start_time} ms", reply)
 
 
 def log(update, context):
@@ -72,7 +91,7 @@ def log(update, context):
 
 
 def bot_help(update, context):
-    help_string_adm = f'''
+    help_string_adm = f"""
 /{BotCommands.HelpCommand}: To get this message
 
 /{BotCommands.MirrorCommand} [download_url][magnet_link]: Start mirroring the link to Google Drive.
@@ -123,9 +142,9 @@ def bot_help(update, context):
 
 /weebhelp: Get help for Anime, Manga, and Character module.
 
-'''
+"""
 
-    help_string = f'''
+    help_string = f"""
 /{BotCommands.HelpCommand}: To get this message
 
 /{BotCommands.MirrorCommand} [download_url][magnet_link]: Start mirroring the link to Google Drive.
@@ -157,7 +176,7 @@ def bot_help(update, context):
 /tshelp: Get help for Torrent search module.
 
 /weebhelp: Get help for Anime, Manga, and Character module.
-'''
+"""
 
     if CustomFilters.sudo_user(update) or CustomFilters.owner_filter(update):
         sendMessage(help_string_adm, context.bot, update)
@@ -166,23 +185,24 @@ def bot_help(update, context):
 
 
 botcmds = [
-BotCommand(f'{BotCommands.MirrorCommand}', 'Start Mirroring'),
-BotCommand(f'{BotCommands.TarMirrorCommand}','Upload tar (zipped) file'),
-BotCommand(f'{BotCommands.UnzipMirrorCommand}','Extract files'),
-BotCommand(f'{BotCommands.CloneCommand}','Copy file/folder to Drive'),
-BotCommand(f'{BotCommands.CountCommand}','Count file/folder of Drive link'),
-BotCommand(f'{BotCommands.WatchCommand}','Mirror YT-DL support link'),
-BotCommand(f'{BotCommands.TarWatchCommand}','Mirror Youtube playlist link as tar'),
-BotCommand(f'{BotCommands.CancelMirror}','Cancel a task'),
-BotCommand(f'{BotCommands.CancelAllCommand}','Cancel all tasks'),
-BotCommand(f'{BotCommands.DeleteCommand}','Delete file from Drive'),
-BotCommand(f'{BotCommands.ListCommand}',' [query] Searches files in Drive'),
-BotCommand(f'{BotCommands.StatusCommand}','Get Mirror Status message'),
-BotCommand(f'{BotCommands.StatsCommand}','Bot Usage Stats'),
-BotCommand(f'{BotCommands.HelpCommand}','Get Detailed Help'),
-BotCommand(f'{BotCommands.SpeedCommand}','Check Speed of the host'),
-BotCommand(f'{BotCommands.LogCommand}','Bot Log [owner/sudo only]'),
-BotCommand(f'{BotCommands.RestartCommand}','Restart bot [owner/sudo only]')]
+    BotCommand(f"{BotCommands.MirrorCommand}", "Start Mirroring"),
+    BotCommand(f"{BotCommands.TarMirrorCommand}", "Upload tar (zipped) file"),
+    BotCommand(f"{BotCommands.UnzipMirrorCommand}", "Extract files"),
+    BotCommand(f"{BotCommands.CloneCommand}", "Copy file/folder to Drive"),
+    BotCommand(f"{BotCommands.CountCommand}", "Count file/folder of Drive link"),
+    BotCommand(f"{BotCommands.WatchCommand}", "Mirror YT-DL support link"),
+    BotCommand(f"{BotCommands.TarWatchCommand}", "Mirror Youtube playlist link as tar"),
+    BotCommand(f"{BotCommands.CancelMirror}", "Cancel a task"),
+    BotCommand(f"{BotCommands.CancelAllCommand}", "Cancel all tasks"),
+    BotCommand(f"{BotCommands.DeleteCommand}", "Delete file from Drive"),
+    BotCommand(f"{BotCommands.ListCommand}", " [query] Searches files in Drive"),
+    BotCommand(f"{BotCommands.StatusCommand}", "Get Mirror Status message"),
+    BotCommand(f"{BotCommands.StatsCommand}", "Bot Usage Stats"),
+    BotCommand(f"{BotCommands.HelpCommand}", "Get Detailed Help"),
+    BotCommand(f"{BotCommands.SpeedCommand}", "Check Speed of the host"),
+    BotCommand(f"{BotCommands.LogCommand}", "Bot Log [owner/sudo only]"),
+    BotCommand(f"{BotCommands.RestartCommand}", "Restart bot [owner/sudo only]"),
+]
 
 
 def main():
@@ -195,17 +215,38 @@ def main():
         os.remove(".restartmsg")
     bot.set_my_commands(botcmds)
 
-#    start_handler = CommandHandler(BotCommands.StartCommand, start, run_async=True)
-    ping_handler = CommandHandler(BotCommands.PingCommand, ping,
-                                  filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
-    restart_handler = CommandHandler(BotCommands.RestartCommand, restart,
-                                     filters=CustomFilters.owner_filter | CustomFilters.sudo_user, run_async=True)
-    help_handler = CommandHandler(BotCommands.HelpCommand,
-                                  bot_help, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
-    stats_handler = CommandHandler(BotCommands.StatsCommand,
-                                   stats, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
-    log_handler = CommandHandler(BotCommands.LogCommand, log, filters=CustomFilters.owner_filter | CustomFilters.sudo_user, run_async=True)
- #  dispatcher.add_handler(start_handler)
+    #    start_handler = CommandHandler(BotCommands.StartCommand, start, run_async=True)
+    ping_handler = CommandHandler(
+        BotCommands.PingCommand,
+        ping,
+        filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+        run_async=True,
+    )
+    restart_handler = CommandHandler(
+        BotCommands.RestartCommand,
+        restart,
+        filters=CustomFilters.owner_filter | CustomFilters.sudo_user,
+        run_async=True,
+    )
+    help_handler = CommandHandler(
+        BotCommands.HelpCommand,
+        bot_help,
+        filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+        run_async=True,
+    )
+    stats_handler = CommandHandler(
+        BotCommands.StatsCommand,
+        stats,
+        filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+        run_async=True,
+    )
+    log_handler = CommandHandler(
+        BotCommands.LogCommand,
+        log,
+        filters=CustomFilters.owner_filter | CustomFilters.sudo_user,
+        run_async=True,
+    )
+    #  dispatcher.add_handler(start_handler)
     dispatcher.add_handler(ping_handler)
     dispatcher.add_handler(restart_handler)
     dispatcher.add_handler(help_handler)
@@ -214,6 +255,7 @@ def main():
     updater.start_polling()
     LOGGER.info("Bot Started!")
     signal.signal(signal.SIGINT, fs_utils.exit_clean_up)
+
 
 app.start()
 main()
