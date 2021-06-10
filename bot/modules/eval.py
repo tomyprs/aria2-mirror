@@ -39,10 +39,12 @@ def send(msg, bot, update):
             chat_id=update.effective_chat.id, text=f"`{msg}`", parse_mode=ParseMode.MARKDOWN
         )
 
+
 @run_async
 def evaluate(update: Update, context: CallbackContext):
     bot = context.bot
     send(do(eval, bot, update), bot, update)
+
 
 @run_async
 def execute(update: Update, context: CallbackContext):
@@ -97,6 +99,7 @@ def do(func, bot, update):
             result = f"{value}{func_return}"
         if result:
             return result
+
 
 @run_async
 def clear(update: Update, context: CallbackContext):

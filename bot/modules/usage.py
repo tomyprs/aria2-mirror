@@ -77,7 +77,10 @@ def dyno_usage(update, context):
 
 
 dyno_usage_handler = CommandHandler(
-    command=BotCommands.UsageCommand, callback=dyno_usage, filters=CustomFilters.owner_filter, run_async=True,
+    command=BotCommands.UsageCommand,
+    callback=dyno_usage,
+    filters=CustomFilters.owner_filter,
+    run_async=True,
 )
 
 dispatcher.add_handler(dyno_usage_handler)
