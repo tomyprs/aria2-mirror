@@ -1,4 +1,23 @@
-FROM ghcr.io/tomyprs/aria2-mirror:master
+FROM python:3.9-slim-buster
+
+# Set Debian to non interactive
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install & update pkg
+RUN echo deb http://http.us.debian.org/debian/ testing non-free contrib main > /etc/apt/sources.list && \
+    apt -qq update
+
+RUN apt-get -qq update \
+	    && apt-get -qq install -y --no-install-recommends \
+	    git g++ gcc autoconf automake aria2 \
+	    m4 libtool make libcurl4-openssl-dev \
+	    libcrypto++-dev libsqlite3-dev libc-ares-dev \
+	    libsodium-dev libnautilus-extension-dev \
+	    libssl-dev libfreeimage-dev swig jq ffmpeg git curl \
+        p7zip-full p7zip-rar unzip pv locales python3-lxml \
+	    && apt-get -y autoremove \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists
 
 # Install Python dependencies
 ADD requirements.txt .
