@@ -7,6 +7,15 @@ RUN pip3 install -U pip wheel setuptools && \
 
 # Set working directory
 WORKDIR /app
+# Mega sdk
+ENV MEGA_SDK_VERSION '3.8.1'
+RUN git clone https://github.com/meganz/sdk.git sdk && cd sdk \
+    && git checkout v$MEGA_SDK_VERSION \
+    && ./autogen.sh && ./configure --disable-silent-rules --enable-python --with-sodium --disable-examples \
+    && make -j$(nproc --all) \
+    && cd bindings/python/ && python3 setup.py bdist_wheel \
+    && cd dist/ && pip3 install --no-cache-dir megasdk-$MEGA_SDK_VERSION-*.whl
+
 
 # Copy from builder to working directory
 
