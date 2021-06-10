@@ -11,13 +11,13 @@ RUN pip3 install -U pip wheel setuptools && \
 # Set working directory
 WORKDIR /app
 
-# Copy from builder to working directory
-COPY extract /usr/local/bin
-COPY pextract /usr/local/bin
+# Copy to working dir
 COPY . /app
-RUN chmod +x /usr/local/bin/extract && chmod +x /usr/local/bin/pextract
-COPY .netrc /root/.netrc
-RUN chmod 600 /app/.netrc && chmod +x aria.sh
+RUN set -ex \
+    && chmod 777 /app \
+    && cp netrc /root/.netrc \
+    && cp extract pextract /usr/local/bin \
+    && chmod +x aria.sh /usr/local/bin/extract /usr/local/bin/pextract
 
 # Set command
 CMD ["bash", "start.sh"]
