@@ -1,14 +1,21 @@
-FROM breakdowns/mega-sdk-python:latest
+FROM ghcr.io/tomyprs/aria2-mirror:master
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+ADD requirements.txt .
+RUN pip3 install -U pip wheel setuptools && \
+    pip3 install -r requirements.txt
+
+# Set working directory
+WORKDIR /app
+
+# Copy from builder to working directory
 
 COPY extract /usr/local/bin
 COPY pextract /usr/local/bin
+COPY . /app
 RUN chmod +x /usr/local/bin/extract && chmod +x /usr/local/bin/pextract
-COPY . .
 COPY .netrc /root/.netrc
-RUN chmod 600 /usr/src/app/.netrc
-RUN chmod +x aria.sh
+RUN chmod 600 /app/.netrc && chmod +x aria.sh
 
-CMD ["bash","start.sh"]
+# Set command
+CMD ["bash", "start.sh"]
