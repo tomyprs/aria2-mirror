@@ -97,7 +97,6 @@ def delete_all_messages():
 
 def update_all_messages():
     msg = get_readable_message()
-    )
     with status_reply_dict_lock:
         for chat_id in list(status_reply_dict.keys()):
             if status_reply_dict[chat_id] and msg != status_reply_dict[chat_id].text:
