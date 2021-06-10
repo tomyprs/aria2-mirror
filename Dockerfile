@@ -1,7 +1,7 @@
 # Use own Docker image
 FROM thekai/aria-megasdk:latest
 
-RUN apt-get -qq install libss-dev
+RUN apt-get -qq install libssl-dev
 
 # Install Python dependencies
 ADD requirements.txt .
