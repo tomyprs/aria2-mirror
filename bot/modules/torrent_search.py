@@ -6,10 +6,9 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.filters import CustomFilters
 from bot.helper.telegram_helper.message_utils import editMessage, sendMessage
 from telegram import update
-from telegram.ext import run_async, CommandHandler
+from telegram.ext import CommandHandler
 
 
-@run_async
 def tor_search(update, context):
     message = update.message.text
     query = message.split(" ", maxsplit=1)[1]
@@ -46,6 +45,6 @@ def tor_search(update, context):
 tor_search_handler = CommandHandler(
     command=BotCommands.TorrentSearchCommand,
     callback=tor_search,
-    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user,
+    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True,
 )
 dispatcher.add_handler(tor_search_handler)

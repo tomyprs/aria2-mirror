@@ -4,7 +4,6 @@ from bot import LOGGER, dispatcher
 from bot import OWNER_ID
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext, CommandHandler
-from telegram.ext.dispatcher import run_async
 
 def dev_plus(func):
     
@@ -26,7 +25,6 @@ def dev_plus(func):
     return is_dev_plus_func
 
 @dev_plus
-@run_async
 def shell(update: Update, context: CallbackContext):
     message = update.effective_message
     cmd = message.text.split(' ', 1)
@@ -59,5 +57,5 @@ def shell(update: Update, context: CallbackContext):
         message.reply_text(reply, parse_mode=ParseMode.MARKDOWN)
 
 
-SHELL_HANDLER = CommandHandler(['sh', 'shell', 'term', 'terminal'], shell)
+SHELL_HANDLER = CommandHandler(['sh', 'shell', 'term', 'terminal'], shell, run_async=True)
 dispatcher.add_handler(SHELL_HANDLER)

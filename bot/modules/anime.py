@@ -5,9 +5,9 @@ import textwrap
 import bs4
 import requests
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
-from telegram.ext import run_async, CallbackContext, CommandHandler
+from telegram.ext import CallbackContext, CommandHandler
 
-from bot import dispatcher, IMAGE_URL
+from bot import dispatcher
 
 def shorten(description, info = 'anilist.co'):
     msg = "" 
@@ -148,7 +148,6 @@ query ($id: Int,$search: String) {
 url = 'https://graphql.anilist.co'
 
 
-@run_async
 def anime(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(' ', 1)
@@ -190,7 +189,7 @@ def anime(update: Update, context: CallbackContext):
         else: 
             update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
 
-@run_async
+
 def character(update: Update, _):
     message = update.effective_message
     search = message.text.split(' ', 1)
@@ -211,7 +210,7 @@ def character(update: Update, _):
             update.effective_message.reply_photo(photo = image, caption = msg, parse_mode=ParseMode.MARKDOWN)
         else: update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
-@run_async
+
 def manga(update: Update, _):
     message = update.effective_message
     search = message.text.split(' ', 1)
@@ -249,20 +248,20 @@ def manga(update: Update, _):
                 update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
         else: update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
 
-@run_async
+
 def weebhelp(update, context):
     help_string = '''
 • `/anime`*:* Search Anime
 • `/character`*:* Search Character
 • `/manga`*:* Search Manga
 '''
-    update.effective_message.reply_photo(IMAGE_URL, help_string, parse_mode=ParseMode.MARKDOWN)
+    update.effective_message.reply_text(help_string, parse_mode=ParseMode.MARKDOWN)
 
 
-ANIME_HANDLER = CommandHandler("anime", anime)
-CHARACTER_HANDLER = CommandHandler("character", character)
+ANIME_HANDLER = CommandHandler("anime", anime, run_async=True)
+CHARACTER_HANDLER = CommandHandler("character", character, run_async=True)
 MANGA_HANDLER = CommandHandler("manga", manga)
-WEEBHELP_HANDLER = CommandHandler("weebhelp", weebhelp)
+WEEBHELP_HANDLER = CommandHandler("weebhelp", weebhelp, run_async=True)
 
 dispatcher.add_handler(ANIME_HANDLER)
 dispatcher.add_handler(CHARACTER_HANDLER)
