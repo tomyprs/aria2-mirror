@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import socket
 from megasdkrestclient import MegaSdkRestClient, errors as mega_err
 import subprocess
+from pyrogram import Client
 
 socket.setdefaulttimeout(600)
 
@@ -139,3 +140,4 @@ except KeyError:
 updater = tg.Updater(token=BOT_TOKEN,use_context=True)
 bot = updater.bot
 dispatcher = updater.dispatcher
+app = Client(":memory:", bot_token=BOT_TOKEN, api_id=TELEGRAM_API, api_hash=TELEGRAM_HASH)
