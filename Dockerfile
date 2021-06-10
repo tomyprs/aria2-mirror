@@ -1,6 +1,8 @@
 # Use own Docker image
 FROM thekai/aria-megasdk:latest
 
+RUN apt-get -qq install libss-dev
+
 # Install Python dependencies
 ADD requirements.txt .
 RUN pip3 install -U pip wheel setuptools && \
