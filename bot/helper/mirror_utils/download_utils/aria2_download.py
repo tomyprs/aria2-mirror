@@ -1,11 +1,4 @@
-from bot import (
-    aria2,
-    download_dict_lock,
-    STOP_DUPLICATE_MIRROR,
-    MAX_TORRENT_SIZE,
-    ENABLE_FILESIZE_LIMIT,
-)
-from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
+from bot import aria2, download_dict_lock
 from bot.helper.ext_utils.bot_utils import *
 from .download_helper import DownloadHelper
 from bot.helper.mirror_utils.status_utils.aria_download_status import AriaDownloadStatus
@@ -21,39 +14,7 @@ class AriaDownloadHelper(DownloadHelper):
 
     @new_thread
     def __onDownloadStarted(self, api, gid):
-        sleep(1)
         LOGGER.info(f"onDownloadStart: {gid}")
-        dl = getDownloadByGid(gid)
-        download = api.get_download(gid)
-        self.name = download.name
-        sname = download.name
-        if STOP_DUPLICATE_MIRROR:
-            if dl.getListener().isTar == True:
-                sname = sname + ".tar"
-            if dl.getListener().extract == True:
-                smsg = None
-            else:
-                gdrive = GoogleDriveHelper(None)
-                smsg, button = gdrive.drive_list(sname)
-            if smsg:
-                dl.getListener().onDownloadError(f"File is already available in Drive.\n\n")
-                sendMarkup(
-                    "Here are the search results:",
-                    dl.getListener().bot,
-                    dl.getListener().update,
-                    button,
-                )
-                return aria2.remove([download])
-
-        size = download.total_length
-        if ENABLE_FILESIZE_LIMIT:
-            if size / 1024 / 1024 / 1024 > MAX_TORRENT_SIZE:
-                LOGGER.info(f"Download size Exceeded: {gid}")
-                dl.getListener().onDownloadError(
-                    f"File size {get_readable_file_size(size)} larger than Maximum Allowed size {MAX_TORRENT_SIZE}GB"
-                )
-                return aria2.remove([download])
-
         update_all_messages()
 
     def __onDownloadComplete(self, api: API, gid):
@@ -84,7 +45,7 @@ class AriaDownloadHelper(DownloadHelper):
         LOGGER.info(f"onDownloadStop: {gid}")
         dl = getDownloadByGid(gid)
         if dl:
-            dl.getListener().onDownloadError("Dead torrent!")
+            dl.getListener().onDownloadError("Download stopped by user!")
 
     @new_thread
     def __onDownloadError(self, api, gid):
@@ -107,11 +68,11 @@ class AriaDownloadHelper(DownloadHelper):
             on_download_complete=self.__onDownloadComplete,
         )
 
-    def add_download(self, link: str, path, listener, filename):
+    def add_download(self, link: str, path, listener):
         if is_magnet(link):
-            download = aria2.add_magnet(link, {"dir": path, "out": filename})
+            download = aria2.add_magnet(link, {"dir": path})
         else:
-            download = aria2.add_uris([link], {"dir": path, "out": filename})
+            download = aria2.add_uris([link], {"dir": path})
         if download.error_message:  # no need to proceed further at this point
             listener.onDownloadError(download.error_message)
             return
