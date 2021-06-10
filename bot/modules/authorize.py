@@ -37,7 +37,6 @@ def authorize(update, context):
     sendMessage(msg, context.bot, update)
 
 
-@run_async
 def unauthorize(update, context):
     reply_message = None
     message_ = None
