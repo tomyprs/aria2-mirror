@@ -1,11 +1,14 @@
-from .download_helper import DownloadHelper
-import time
-from youtube_dl import YoutubeDL, DownloadError
-from bot import download_dict_lock, download_dict
-from ..status_utils.youtube_dl_download_status import YoutubeDLDownloadStatus
 import logging
 import re
 import threading
+import time
+
+from youtube_dl import DownloadError, YoutubeDL
+
+from bot import download_dict, download_dict_lock
+
+from ..status_utils.youtube_dl_download_status import YoutubeDLDownloadStatus
+from .download_helper import DownloadHelper
 
 LOGGER = logging.getLogger(__name__)
 
@@ -93,7 +96,9 @@ class YoutubeDLHelper(DownloadHelper):
 
     def __onDownloadStart(self):
         with download_dict_lock:
-            download_dict[self.__listener.uid] = YoutubeDLDownloadStatus(self, self.__listener)
+            download_dict[self.__listener.uid] = YoutubeDLDownloadStatus(
+                self, self.__listener
+            )
 
     def __onDownloadComplete(self):
         self.__listener.onDownloadComplete()
@@ -151,7 +156,7 @@ class YoutubeDLHelper(DownloadHelper):
             self.onDownloadError("Download Cancelled by User!")
 
     def add_download(self, link, path, qual, name):
-        pattern = "^.*(youtu\.be\/|youtube.com\/)(playlist?)"
+        pattern = r"^.*(youtu\.be\/|youtube.com\/)(playlist?)"
         if re.match(pattern, link):
             self.opts["ignoreerrors"] = True
         self.__onDownloadStart()
@@ -164,7 +169,7 @@ class YoutubeDLHelper(DownloadHelper):
                 {
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
-                    "preferredquality": "192",
+                    "preferredquality": "320",
                 }
             ]
         else:

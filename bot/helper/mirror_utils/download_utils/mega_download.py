@@ -1,10 +1,12 @@
 import threading
-from bot import LOGGER, download_dict, download_dict_lock
-from .download_helper import DownloadHelper
-from ..status_utils.mega_status import MegaDownloadStatus
-from megasdkrestclient import MegaSdkRestClient, constants
-from bot.helper.ext_utils.bot_utils import setInterval
 from pathlib import Path
+
+from megasdkrestclient import MegaSdkRestClient, constants
+
+from bot import LOGGER, download_dict, download_dict_lock
+from bot.helper.ext_utils.bot_utils import setInterval
+
+from ..status_utils.mega_status import MegaDownloadStatus
 
 
 class MegaDownloader:
@@ -55,7 +57,9 @@ class MegaDownloader:
     def __onDownloadStart(self, name, size, gid):
         self.__periodic = setInterval(self.POLLING_INTERVAL, self.__onInterval)
         with download_dict_lock:
-            download_dict[self.__listener.uid] = MegaDownloadStatus(self, self.__listener)
+            download_dict[self.__listener.uid] = MegaDownloadStatus(
+                self, self.__listener
+            )
         with self.__resource_lock:
             self.__name = name
             self.__size = size

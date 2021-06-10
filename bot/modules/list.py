@@ -1,10 +1,10 @@
 from telegram.ext import CommandHandler
-from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
+
 from bot import LOGGER, dispatcher
-from bot.helper.telegram_helper.message_utils import sendMessage, sendMarkup, editMessage
-from bot.helper.telegram_helper.filters import CustomFilters
-import threading
+from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot.helper.telegram_helper.bot_commands import BotCommands
+from bot.helper.telegram_helper.filters import CustomFilters
+from bot.helper.telegram_helper.message_utils import editMessage, sendMessage
 
 
 def list_drive(update, context):
@@ -21,7 +21,7 @@ def list_drive(update, context):
             editMessage("No result found", reply, button)
 
     except IndexError:
-        sendMessage("Send a search key along with command", context.bot, update)
+        sendMessage("send a search key along with command", context.bot, update)
 
 
 list_handler = CommandHandler(

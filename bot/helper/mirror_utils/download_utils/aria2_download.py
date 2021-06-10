@@ -1,11 +1,14 @@
+import threading
+from time import sleep
+
+from aria2p import API
+
 from bot import aria2, download_dict_lock
 from bot.helper.ext_utils.bot_utils import *
-from .download_helper import DownloadHelper
 from bot.helper.mirror_utils.status_utils.aria_download_status import AriaDownloadStatus
 from bot.helper.telegram_helper.message_utils import *
-import threading
-from aria2p import API
-from time import sleep
+
+from .download_helper import DownloadHelper
 
 
 class AriaDownloadHelper(DownloadHelper):
@@ -14,7 +17,10 @@ class AriaDownloadHelper(DownloadHelper):
 
     @new_thread
     def __onDownloadStarted(self, api, gid):
+        sleep(1)
         LOGGER.info(f"onDownloadStart: {gid}")
+        download = api.get_download(gid)
+        self.name = download.name
         update_all_messages()
 
     def __onDownloadComplete(self, api: API, gid):
@@ -49,7 +55,9 @@ class AriaDownloadHelper(DownloadHelper):
 
     @new_thread
     def __onDownloadError(self, api, gid):
-        sleep(0.5)  # sleep for split second to ensure proper dl gid update from onDownloadComplete
+        sleep(
+            0.5
+        )  # sleep for split second to ensure proper dl gid update from onDownloadComplete
         LOGGER.info(f"onDownloadError: {gid}")
         dl = getDownloadByGid(gid)
         download = api.get_download(gid)
@@ -68,11 +76,11 @@ class AriaDownloadHelper(DownloadHelper):
             on_download_complete=self.__onDownloadComplete,
         )
 
-    def add_download(self, link: str, path, listener):
+    def add_download(self, link: str, path, listener, filename):
         if is_magnet(link):
-            download = aria2.add_magnet(link, {"dir": path})
+            download = aria2.add_magnet(link, {"dir": path, "out": filename})
         else:
-            download = aria2.add_uris([link], {"dir": path})
+            download = aria2.add_uris([link], {"dir": path, "out": filename})
         if download.error_message:  # no need to proceed further at this point
             listener.onDownloadError(download.error_message)
             return

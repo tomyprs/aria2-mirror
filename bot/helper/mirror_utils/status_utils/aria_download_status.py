@@ -1,5 +1,6 @@
-from bot import aria2, DOWNLOAD_DIR, LOGGER
+from bot import DOWNLOAD_DIR, LOGGER, aria2
 from bot.helper.ext_utils.bot_utils import MirrorStatus
+
 from .status import Status
 
 

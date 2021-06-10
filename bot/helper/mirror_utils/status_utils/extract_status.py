@@ -1,5 +1,6 @@
+from bot.helper.ext_utils.bot_utils import MirrorStatus, get_readable_file_size
+
 from .status import Status
-from bot.helper.ext_utils.bot_utils import get_readable_file_size, MirrorStatus
 
 
 class ExtractStatus(Status):

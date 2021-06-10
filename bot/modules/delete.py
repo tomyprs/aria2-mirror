@@ -1,11 +1,12 @@
-from telegram.ext import CommandHandler
 import threading
-from telegram import Update
-from bot import dispatcher, LOGGER
-from bot.helper.telegram_helper.message_utils import auto_delete_message, sendMessage
-from bot.helper.telegram_helper.filters import CustomFilters
-from bot.helper.telegram_helper.bot_commands import BotCommands
+
+from telegram.ext import CommandHandler
+
+from bot import LOGGER, dispatcher
 from bot.helper.mirror_utils.upload_utils import gdriveTools
+from bot.helper.telegram_helper.bot_commands import BotCommands
+from bot.helper.telegram_helper.filters import CustomFilters
+from bot.helper.telegram_helper.message_utils import auto_delete_message, sendMessage
 
 
 def deletefile(update, context):
@@ -15,12 +16,12 @@ def deletefile(update, context):
         link = msg_args[1]
         LOGGER.info(msg_args[1])
     except IndexError:
-        msg = "Send a link along with command"
+        msg = "send a link along with command"
 
     if msg == "":
         drive = gdriveTools.GoogleDriveHelper()
         msg = drive.deletefile(link)
-    LOGGER.info(f"DeleteFileCmd : {msg}")
+    LOGGER.info(f"this is msg : {msg}")
     reply_message = sendMessage(msg, context.bot, update)
 
     threading.Thread(
@@ -29,9 +30,9 @@ def deletefile(update, context):
 
 
 delete_handler = CommandHandler(
-    command=BotCommands.DeleteCommand,
+    command=BotCommands.deleteCommand,
     callback=deletefile,
-    filters=CustomFilters.owner_filter | CustomFilters.sudo_user,
+    filters=CustomFilters.owner_filter,
     run_async=True,
 )
 dispatcher.add_handler(delete_handler)

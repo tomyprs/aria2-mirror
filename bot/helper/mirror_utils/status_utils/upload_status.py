@@ -1,6 +1,11 @@
-from .status import Status
-from bot.helper.ext_utils.bot_utils import MirrorStatus, get_readable_file_size, get_readable_time
 from bot import DOWNLOAD_DIR
+from bot.helper.ext_utils.bot_utils import (
+    MirrorStatus,
+    get_readable_file_size,
+    get_readable_time,
+)
+
+from .status import Status
 
 
 class UploadStatus(Status):
