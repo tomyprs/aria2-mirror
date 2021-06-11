@@ -29,8 +29,8 @@ def sendMessage(text: str, bot, update: Update):
             text=text,
             parse_mode="HTMl",
         )
-    except Exception as e:
-        LOGGER.error(str(e))
+    except Exception as _error:
+        LOGGER.error(str(_error))
 
 
 def sendMarkup(text: str, bot, update: Update, reply_markup: InlineKeyboardMarkup):
@@ -42,8 +42,8 @@ def sendMarkup(text: str, bot, update: Update, reply_markup: InlineKeyboardMarku
             reply_markup=reply_markup,
             parse_mode="HTMl",
         )
-    except Exception as e:
-        LOGGER.error(str(e))
+    except Exception as _error:
+        LOGGER.error(str(_error))
 
 
 def editMessage(text: str, message: Message, reply_markup=None):
@@ -55,15 +55,15 @@ def editMessage(text: str, message: Message, reply_markup=None):
             reply_markup=reply_markup,
             parse_mode="HTMl",
         )
-    except Exception as e:
-        LOGGER.error(str(e))
+    except Exception as _error:
+        LOGGER.error(str(_error))
 
 
 def deleteMessage(bot, message: Message):
     try:
         bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    except Exception as e:
-        LOGGER.error(str(e))
+    except Exception as _error:
+        LOGGER.error(str(_error))
 
 
 def sendLogFile(bot, update: Update):
@@ -93,8 +93,8 @@ def delete_all_messages():
             try:
                 deleteMessage(bot, message)
                 del status_reply_dict[message.chat.id]
-            except Exception as e:
-                LOGGER.error(str(e))
+            except Exception as _error:
+                LOGGER.error(str(_error))
 
 
 def update_all_messages():
