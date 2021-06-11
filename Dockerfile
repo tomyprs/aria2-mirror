@@ -1,8 +1,8 @@
 # Use own Docker image
-FROM thekai/aria-megasdk:latest
+FROM kenhv/mirrorbot:ubuntu
 
-RUN apt-get -qq install libssl libssl-dev libcrypto++-dev openssl
-
+RUN apt-get -qq update -y \
+    && apt-get -qq install -y git
 # Install Python dependencies
 ADD requirements.txt .
 RUN pip3 install -U pip wheel setuptools && \
