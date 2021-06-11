@@ -1,5 +1,5 @@
 # Use own Docker image
-FROM kenhv/mirrorbot:ubuntu
+FROM thekai/aria-megasdk:latest
 
 RUN apt-get -qq update -y \
     && apt-get -qq install -y git
